@@ -2,7 +2,7 @@
 
 This App is indoor version, it is use to detect shake and issue alert, we suggest user put phone installed  indoor version app in a steady status when it start detecting, ex : put phone horizontally.
 
-If you want to receive notification on your mobile phone when indoor phone detect shake, please check  another our project [androidAppMobile](url), you can click scan button on indoor App and QR code button on mobile App to pair two App.
+If you want to receive notification on your mobile phone when indoor phone detect shake, please check  another our project [androidAppMobile](https://github.com/ncu106503522/androidAppMobile), you can click scan button on indoor App and QR code button on mobile App to pair two App.
 
 ## Getting Started
 
@@ -37,13 +37,16 @@ If you want install this App with Google play, please send your google play acco
 * [Libev](https://github.com/enki/libev) - For nonblocking UDP server
 * [FCM](https://firebase.google.com/) - For Push Notification
 
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.
 
-
 ## Authors
-* ncu106503522
+* [ncu106503522](https://github.com/ncu106503522)
 * mwnl lab
 ## License
 
