@@ -17,7 +17,7 @@ IDE which can run Android project :
 
 ### Installing
 Download project from git :
-```
+```sh
 git clone https://github.com/Earthquake-Warning-System/androidAppIndoor.git
 ```
 Notice that this project use Firebase to send notification, so you need to build a account in Firebase and create a project for this, basically, you need finish following things.
@@ -42,9 +42,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 We use [SemVer](http://semver.org/) for versioning.
 
-## Authors
-* [ncu106503522](https://github.com/ncu106503522)
-* mwnl lab
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
