@@ -13,13 +13,12 @@ These instructions will get you a copy of the project up and running on your loc
 IDE which can run Android project :
 
 * Android studio
-* Visual Studio 
-* IntelliJ IDEA
+
 
 ### Installing
 Download project from git :
 ```
-git clone "url"
+git clone https://github.com/Earthquake-Warning-System/androidAppIndoor.git
 ```
 Notice that this project use Firebase to send notification, so you need to build a account in Firebase and create a project for this, basically, you need finish following things.
 * put google-services.json into project
@@ -33,9 +32,7 @@ If you want install this App with Google play, please send your google play acco
 * [androidAppMobile](https://play.google.com/apps/internaltest/4701297342863693173)
 * [androidAppIndoor](https://play.google.com/apps/internaltest/4700171472181250730)
 
-## Built With  
-* [Libev](https://github.com/enki/libev) - For nonblocking UDP server
-* [FCM](https://firebase.google.com/) - For Push Notification
+
 
 ## Contributing
 
