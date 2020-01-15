@@ -22,7 +22,10 @@ git clone https://github.com/Earthquake-Warning-System/androidAppIndoor.git
 ```
 Notice that this project use Firebase to send notification, so you need to build a account in Firebase and create a project for this, basically, you need finish following things.
 * put google-services.json into project
-* Fill out author key
+* Fill out author key in local.properties
+```
+auth.key.dev="your FCM key here"
+```
 
 If you need tutorial please check  [FCM setup](https://firebase.google.com/docs/android/setup)
 
