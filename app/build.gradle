@@ -15,9 +15,18 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream()) // load local.properties
+        def devKey = properties.getProperty('auth.key.dev')
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "NOTIFICATION_AUTHOR_KEY" , devKey
+            resValue "string", "developer_key", devKey
+        }
+        debug {
+            buildConfigField "String", "NOTIFICATION_AUTHOR_KEY", devKey
+            resValue "string", "developer_key", devKey
         }
     }
 }

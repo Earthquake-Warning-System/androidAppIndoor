@@ -1,5 +1,6 @@
 package com.example.udptest;
 
+import android.graphics.Bitmap;
 import org.json.JSONObject;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -10,7 +11,7 @@ import java.net.URL;
 public class FirebaseSender {
 
     public static void pushFCMNotification(String userDeviceIdKey, String title, String body) throws Exception {
-        String authKey = "";   //Please add you FCM AUTH key here
+        String authKey = BuildConfig.NOTIFICATION_AUTHOR_KEY;   //Please add you FCM AUTH key here
         String FMCurl = "https://fcm.googleapis.com/fcm/send";
 
         URL url = new URL(FMCurl);
