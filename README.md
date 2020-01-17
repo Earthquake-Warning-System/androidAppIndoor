@@ -2,7 +2,7 @@
 
 This App is an indoor version, it is used to detect shake and issue alert, we suggest the user put the phone installed indoor version app in a steady status when it starts detecting, ex: put phone horizontally.
 
-If you want to receive a notification on your mobile phone when an indoor phone detects shake, please check another of our project [androidAppMobile](https://github.com/ncu106503522/androidAppMobile), you can click the "scan" button on the indoor App and QR code button on the mobile App to pair two apps.
+If you want to receive a notification on your mobile phone when an indoor phone detects shake, please check other of our project [androidAppMobile](https://github.com/ncu106503522/androidAppMobile), you can click the "scan" button on the indoor App and QR code button on the mobile App to pair two apps.
 
 ## Getting Started
 
