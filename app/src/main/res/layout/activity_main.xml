@@ -10,7 +10,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true"
         tools:context=".MainActivity"
->
+        android:id="@+id/constraintLayout">
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
@@ -19,7 +19,8 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             tools:context=".MainActivity"
-    >
+            tools:visibility="gone"
+            tools:layout_editor_absoluteY="-49dp" tools:layout_editor_absoluteX="75dp">
 
         <TextView
                 android:id="@+id/debuglog"
@@ -43,14 +44,14 @@
                 android:ellipsize="end"
                 android:textColor="#000000"
                 android:textSize="24sp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-                app:layout_constraintVertical_bias="0.852" android:layout_marginEnd="8dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"
-                app:layout_constraintHorizontal_bias="0.497"/>
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/QRiv" app:layout_constraintVertical_bias="0.732"/>
 
 
         <Button
@@ -59,35 +60,48 @@
                 android:id="@+id/howto"
                 android:layout_width="88dp"
                 android:layout_height="48dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:text="使用說明"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.706"
-                app:layout_constraintVertical_bias="0.703" android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"/>
+                app:layout_constraintHorizontal_bias="0.706"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/detectstatus" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/pair_setting"/>
         <Button
                 android:textColor="#d1d5f8"
                 android:background="@drawable/shape_rectangle"
                 android:id="@+id/camera"
                 android:layout_width="88dp"
                 android:layout_height="48dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:text="打開相機"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.28"
-                app:layout_constraintVertical_bias="0.703" android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"/>
+                app:layout_constraintHorizontal_bias="0.28"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/detectstatus" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/pair_setting"/>
 
+        <Button
+                android:textColor="#d1d5f8"
+                android:background="@drawable/shape_rectangle"
+                android:id="@+id/pair_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="配對設定"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/switch1"
+                android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/detectstatus"
+                app:layout_constraintVertical_bias="0.288"/>
         <ImageView
                 android:layout_width="219dp"
                 android:layout_height="209dp"
@@ -113,8 +127,9 @@
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginLeft="8dp" app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintBottom_toTopOf="@+id/detectstatus" android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="@+id/QRiv" app:layout_constraintVertical_bias="0.745"/>
+                app:layout_constraintBottom_toTopOf="@+id/detectstatus"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/QRiv"
+                app:layout_constraintVertical_bias="0.231"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -126,7 +141,6 @@
                                                        android:focusable="true"
                                                        android:focusableInTouchMode="true"
                                                        android:id="@+id/linearLayout2"
-
                                                        tools:visibility="gone"
     >
         <Button
@@ -196,5 +210,99 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout android:orientation="vertical"
+                                                       android:layout_width="match_parent"
+                                                       android:layout_height="match_parent"
+                                                       android:id="@+id/linearLayout4"
+                                                       tools:layout_editor_absoluteY="16dp"
+                                                       tools:layout_editor_absoluteX="16dp"
+
+    >
+
+
+        <Button
+                android:textColor="#d1d5f8"
+                android:background="@drawable/shape_rectangle"
+                android:id="@+id/go_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="返回"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.743"/>
+        <Button
+                android:textColor="#d1d5f8"
+                android:background="@drawable/shape_rectangle"
+                android:id="@+id/test_not"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="test"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.736"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/textView4"
+                android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/go_back"
+                app:layout_constraintVertical_bias="0.593"/>
+        <Button
+                android:textColor="#d1d5f8"
+                android:background="@drawable/shape_rectangle"
+                android:id="@+id/token_del"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="delete"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/textView4"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/test_not" android:layout_marginRight="8dp"
+                app:layout_constraintHorizontal_bias="0.584"
+                android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/go_back"
+                app:layout_constraintVertical_bias="0.593"/>
+        <TextView
+                android:layout_width="274dp"
+                android:layout_height="253dp"
+                android:textSize="30sp"
+                android:textColor="#E0E0E0"
+                android:gravity="center_horizontal"
+                android:id="@+id/textView4"
+                android:layout_marginTop="76dp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.495" app:layout_constraintVertical_bias="0.071"/>
+        <TextView
+                android:layout_width="156dp"
+                android:layout_height="38dp"
+                android:textSize="30sp"
+                android:textColor="#E0E0E0"
+                android:gravity="center_horizontal"
+                android:id="@+id/textView5"
+                android:text="type here:"
+                android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/input"
+                android:layout_marginRight="8dp" app:layout_constraintHorizontal_bias="0.551"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/go_back"
+                app:layout_constraintVertical_bias="0.229"/>
+        <EditText
+                android:id="@+id/input"
+                android:layout_width="148dp"
+                android:layout_height="39dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/go_back" android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.16"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" app:layout_constraintHorizontal_bias="0.874"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

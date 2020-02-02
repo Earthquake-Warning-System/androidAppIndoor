@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
+        linearLayout4.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val message = intent!!.getStringExtra("message")
@@ -185,7 +186,7 @@ class MainActivity : AppCompatActivity() {
             else {
                 println(result.getContents().toString())
                 val tool = Tool(this)
-                tool.addID("Pair", result.getContents().toString())
+                tool.addID(result.getContents().toString())
                 Thread(Runnable {
                     FirebaseSender.pushFCMNotification(result.getContents().toString(), "Pair", "配對成功")
                 }).start()
@@ -232,16 +233,32 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.VISIBLE
             linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.INVISIBLE
         }
         next1!!.setOnClickListener {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.VISIBLE
+            linearLayout4.visibility = View.INVISIBLE
         }
         next2!!.setOnClickListener {
             linearLayout1.visibility = View.VISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.INVISIBLE
+        }
+        pair_setting!!.setOnClickListener {
+            linearLayout1.visibility = View.INVISIBLE
+            linearLayout2.visibility = View.INVISIBLE
+            linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.VISIBLE
+            textView4.text = null
+            Thread(Runnable {
+                val tokenText = TokenSetting(this).listToken()
+                runOnUiThread {
+                    textView4.text = tokenText
+                }
+            }).start()
         }
 
         camera!!.setOnClickListener {
@@ -256,5 +273,37 @@ class MainActivity : AppCompatActivity() {
             })
             thread.start()
         }
+        go_back!!.setOnClickListener{
+            linearLayout1.visibility = View.VISIBLE
+            linearLayout2.visibility = View.INVISIBLE
+            linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.INVISIBLE
+        }
+        test_not!!.setOnClickListener{
+            if(input!!.text!= null){
+                Thread(Runnable {
+                    TokenSetting(this).testToken(input!!.text.toString())
+                }).start()
+            }
+            input!!.text = null
+        }
+        token_del!!.setOnClickListener{
+            Thread(Runnable {
+                if(input!!.text!= null){
+                    TokenSetting(this).deleteToken(input!!.text.toString())
+                    Log.d("clear","success")
+                    val tokenText = TokenSetting(this).listToken()
+                    Log.d("after delete",tokenText )
+                    runOnUiThread {
+                        textView4.text = tokenText
+                    }
+                }
+            }).start()
+            input!!.text = null
+        }
+
+
+
+
     }
 }

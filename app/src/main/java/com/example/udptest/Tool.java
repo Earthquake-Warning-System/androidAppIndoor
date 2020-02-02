@@ -3,6 +3,7 @@ package com.example.udptest;
 import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -15,11 +16,7 @@ public class Tool {
     SharedPreferences sharedPreferences;
 
     public void saveData(String key, String value){
-        String ret = sharedPreferences.getString(key,"");
-        if(!ret.equals(value)){
-            sharedPreferences.edit().putString(key,value).apply();
-        }
-
+        sharedPreferences.edit().putString(key,value).apply();
     }
 
     public String getData(String key){
@@ -48,24 +45,16 @@ public class Tool {
 
     }
 
-    public void addID(String title, String id){
-        int e = 0;
-        String s = sharedPreferences.getString(title,"");
-        String[] tokens = s.split(";");
-        for (String token:tokens){
-            if(token.length() > 0) { //紀錄裡已有配對
-                if(id.equals(token)) { e++; //配對完成 }
-                }else{ //無配對
-                    s =  s + id + ";";
-                    saveData(title,s);
-                    e++;
-                }
-            }
-            if (e == 0){ // 這個沒配對過
-                s =  s + id + ";";
-                saveData(title,s);
+    public void addID(String id){
+
+        for(int i = 0 ; i < 4 ; i++){
+            String key = "Pair"+i;
+            String s = sharedPreferences.getString(key ,"");
+            if(s == ""){
+                saveData( key , id);
+                Log.d("save token "+ i  ,id);
+                break;
             }
         }
-
     }
 }

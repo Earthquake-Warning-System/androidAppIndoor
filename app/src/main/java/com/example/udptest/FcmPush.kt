@@ -9,14 +9,11 @@ class FcmPush (private val context: Context){
          Thread(Runnable {
             try {
                 val sharedPreferences =  context.getSharedPreferences("DATA", 0)
-                val ids = sharedPreferences.getString("Pair", "")
-                val tokens = ids!!.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                for (id in tokens) {
-                    if (id.length > 0) {
-                        Log.v("FCM", "Notification(id):$id")
-                        FirebaseSender.pushFCMNotification(id, title, body)
-                    } else {
-                        Log.v("FCM", "Notification(id): empty")
+                for (i in 0 ..3){
+                    val key = "Pair"+i
+                    val ids = sharedPreferences.getString(key , "")
+                    if (ids!=null){
+                        FirebaseSender.pushFCMNotification(ids , title, body)
                     }
                 }
             } catch (e: Exception) {
