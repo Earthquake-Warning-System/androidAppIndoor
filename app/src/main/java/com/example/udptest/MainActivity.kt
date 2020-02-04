@@ -26,6 +26,7 @@ import android.content.pm.PackageManager
 import android.view.Menu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.udptest.credibility.Credibility
 import com.google.zxing.integration.android.IntentIntegrator
 
 
@@ -45,11 +46,11 @@ class MainActivity : AppCompatActivity() {
         var timeCounter = 0
         var ringStatus = 0
         var broadcast : LocalBroadcastManager? = null
-        var eqLast : Long = 0
         var kpNum = 0
         var evNum = 0
         var lastKp = ""
         var lastEv = ""
+        val credit = Credibility()
     }
     var textContent :String? = null
     private var detect : SetDetect? = null
@@ -122,6 +123,8 @@ class MainActivity : AppCompatActivity() {
         broadcast= LocalBroadcastManager.getInstance(this)
         //setLayout
         setView()
+
+        credit.setShare(this.getSharedPreferences("DATA", 0))
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             println("ask permission")

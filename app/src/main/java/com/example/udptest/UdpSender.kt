@@ -99,7 +99,7 @@ class UdpSender(private val socket : DatagramSocket){
         val tsUsec = ts % 1000
         MainActivity.evNum++
         logTime(0)
-        val credit = Credibility().dateCount(ts)
+        val credit = MainActivity.credit.dateCount(ts)
         Log.d("credit" , credit.toString() )
         eqEvent.setPacketType("1")
         eqEvent.setEventSec(tsSec.toLong())
