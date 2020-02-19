@@ -45,5 +45,6 @@ dependencies {
     implementation 'com.google.zxing:core:3.2.1'
     implementation 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     implementation  'com.android.support:multidex:1.0.0'
+    implementation "org.jetbrains.anko:anko:$anko_version"
 
 }

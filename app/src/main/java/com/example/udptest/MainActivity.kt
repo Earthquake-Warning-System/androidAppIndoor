@@ -23,11 +23,13 @@ import kotlinx.android.synthetic.main.activity_main.next2
 import kotlin.math.absoluteValue
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.media.session.MediaSession
 import android.view.Menu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.udptest.credibility.Credibility
 import com.google.zxing.integration.android.IntentIntegrator
+import org.jetbrains.anko.alert
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         var lastKp = ""
         var lastEv = ""
         val credit = Credibility()
+        var tokenSet = TokenSetting()
     }
     var textContent :String? = null
     private var detect : SetDetect? = null
@@ -88,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
         linearLayout4.visibility = View.INVISIBLE
+        linearLayout5.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val message = intent!!.getStringExtra("message")
@@ -123,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         broadcast= LocalBroadcastManager.getInstance(this)
         //setLayout
         setView()
-
+        tokenSet.setShare(this.getSharedPreferences("DATA", 0))
         credit.setShare(this.getSharedPreferences("DATA", 0))
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -222,6 +226,28 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setView(){
+        val myAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
+
+        main_listview.setOnItemClickListener { adapterView, view, i, l ->
+            val msg = myAdapter.getItem(i)
+            alert ("選擇操作"){
+                positiveButton("測試配對") {
+                    Thread(Runnable {
+                        TokenSetting().testToken(msg.last().toString())
+                    }).start()
+                }
+                negativeButton("刪除配對") {
+                    Thread(Runnable {
+                        TokenSetting().deleteToken(msg.last().toString())
+                        Log.d("clear","success")
+                    }).start()
+                    myAdapter.remove(msg)
+                }
+            }.show()
+        }
+        main_listview.adapter = myAdapter
+
+
         val constrantview : ConstraintLayout = linearLayout1
         constrantview.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View, m: MotionEvent): Boolean {
@@ -251,7 +277,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout4.visibility = View.INVISIBLE
         }
         pair_setting!!.setOnClickListener {
-            linearLayout1.visibility = View.INVISIBLE
+            /*linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.VISIBLE
@@ -261,7 +287,27 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     textView4.text = tokenText
                 }
-            }).start()
+            }).start()*/
+            linearLayout1.visibility = View.INVISIBLE
+            linearLayout2.visibility = View.INVISIBLE
+            linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.INVISIBLE
+            linearLayout5.visibility = View.VISIBLE
+            myAdapter.clear()
+            val msg = tokenSet.listToken()!!.split(",")
+            Log.d("msg",msg.toString())
+            runOnUiThread {
+                for(i in 0..msg.size-1){
+                        myAdapter.insert(msg[i], 0)
+                }
+            }
+        }
+        go_back2!!.setOnClickListener {
+            linearLayout1.visibility = View.VISIBLE
+            linearLayout2.visibility = View.INVISIBLE
+            linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.INVISIBLE
+            linearLayout5.visibility = View.INVISIBLE
         }
 
         camera!!.setOnClickListener {
@@ -277,15 +323,15 @@ class MainActivity : AppCompatActivity() {
             thread.start()
         }
         go_back!!.setOnClickListener{
-            linearLayout1.visibility = View.VISIBLE
-            linearLayout2.visibility = View.INVISIBLE
+            linearLayout1.visibility = View.INVISIBLE
+            linearLayout2.visibility = View.VISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
         }
         test_not!!.setOnClickListener{
             if(input!!.text!= null){
                 Thread(Runnable {
-                    TokenSetting(this).testToken(input!!.text.toString())
+                    TokenSetting().testToken(input!!.text.toString())
                 }).start()
             }
             input!!.text = null
@@ -293,9 +339,9 @@ class MainActivity : AppCompatActivity() {
         token_del!!.setOnClickListener{
             Thread(Runnable {
                 if(input!!.text!= null){
-                    TokenSetting(this).deleteToken(input!!.text.toString())
+                    TokenSetting().deleteToken(input!!.text.toString())
                     Log.d("clear","success")
-                    val tokenText = TokenSetting(this).listToken()
+                    val tokenText = TokenSetting().listToken()
                     Log.d("after delete",tokenText )
                     runOnUiThread {
                         textView4.text = tokenText
