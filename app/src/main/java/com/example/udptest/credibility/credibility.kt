@@ -13,9 +13,14 @@ class Credibility{
 
         if (MainActivity.falseAlarm){
             val eqT = sharedPreferences!!.getString("eqLast", "")
+
             Log.d("eqget",eqT)
             val Eqtime = eqtime
             Log.d("Eqtime",  eqtime.toString())
+            if(eqT==""){
+                sharedPreferences!!.edit().putString("eqLast", Eqtime.toString()).apply()
+                return 100
+            }
             val dif = Eqtime - eqT!!.toLong()
             Log.d("dif", (Eqtime - eqT!!.toLong()).toString())
             if (dif >= 75600000){ valueOfReliable = 100
