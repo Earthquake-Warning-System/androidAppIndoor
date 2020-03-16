@@ -340,5 +340,19 @@
                 app:layout_constraintVertical_bias="0.306"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout android:orientation="vertical"
+                                                       android:layout_width="match_parent"
+                                                       android:layout_height="match_parent"
+                                                       android:id="@+id/linearLayout6"
+                                                       tools:layout_editor_absoluteY="479dp"
+                                                       tools:layout_editor_absoluteX="180dp"
+                                                       android:background="#dee9f6"
+    >
+        <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/lv"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

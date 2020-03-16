@@ -24,6 +24,7 @@ class UdpSender(private val socket : DatagramSocket){
         }else if (type == 1){MainActivity.lastKp = df.format(calendar.time)}
         val intent = Intent("MyMessage")
         intent.putExtra("message", "log")
+        Log.d("kp time:",df.format(calendar.time))
         MainActivity.broadcast?.sendBroadcast(intent)
     }
 
@@ -48,6 +49,8 @@ class UdpSender(private val socket : DatagramSocket){
         Thread.sleep(100)
         if(MainActivity.serverIp != "" || MainActivity.serverPort != 0){
             kpAckSend()
+
+            kpAliveSend()
         }
     }
     fun kpAckSend(){
@@ -75,13 +78,12 @@ class UdpSender(private val socket : DatagramSocket){
         Sender(MainActivity.serverIp, kpAlivePack, MainActivity.serverPort, kpAlivePack.size, socket).start()
         MainActivity.kpNum++
         logTime(1)
-        Thread.sleep(5000)
 
         for(i in 1..3){
+            Thread.sleep(5000)
             if(MainActivity.respond == 0) {
                 println("cs kp again")
                 Sender(MainActivity.serverIp, kpAlivePack, MainActivity.serverPort, kpAlivePack.size, socket).start()
-                Thread.sleep(2000)
             }else{break}
         }
         if(MainActivity.respond == 0) {

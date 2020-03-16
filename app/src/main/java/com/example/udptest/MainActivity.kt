@@ -24,12 +24,16 @@ import kotlin.math.absoluteValue
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.session.MediaSession
+import android.view.KeyEvent
 import android.view.Menu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.udptest.credibility.Credibility
 import com.google.zxing.integration.android.IntentIntegrator
 import org.jetbrains.anko.alert
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.concurrent.timerTask
 
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         var lastEv = ""
         val credit = Credibility()
         var tokenSet = TokenSetting()
+        lateinit var modelArrayList: ArrayList<Model>
     }
     var textContent :String? = null
     private var detect : SetDetect? = null
@@ -84,9 +89,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+
+    private var lv: ListView? = null
+    private var customAdapter: CustomAdapter? = null
+
+    private val fruitlist = arrayOf("Apples", "Oranges", "Potatoes", "Tomatoes", "Grapes")
+
+    private val model: ArrayList<Model>
+        get() {
+            val list = ArrayList<Model>()
+            for (i in 0..4) {
+
+                val model = Model()
+                model.setNumbers(1)
+                model.setTokens(fruitlist[i])
+                list.add(model)
+            }
+            return list
+        }
+
+
+
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+
+
+        lv = findViewById(R.id.lv) as ListView
+        modelArrayList = model
+        customAdapter = CustomAdapter(this)
+        lv!!.adapter = customAdapter
+
+
+
+
 
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
@@ -146,10 +190,36 @@ class MainActivity : AppCompatActivity() {
         //connecting to country server
         Thread(Runnable {
             UdpSender(socket).bootAskSend()
-            KpAlive().randomtime(150)
+            //KpAlive().randomtime(150)
+            Timer().schedule(timerTask {
+                val date = Date()
+                val calendar =  Calendar.getInstance()
+                calendar.setTime(date)
+                val df =  SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+                Log.d("kp time", df.format(calendar.time))
+                if(serverIp != "" || serverPort != 0) {
+                    //kpalive with server
+                    UdpSender(socket).kpAliveSend()
+
+                }else{
+                    UdpSender(socket).bootAskSend()
+
+                }
+            },300000, 300000)
         }).start()
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)&&linearLayout1.visibility != View.VISIBLE) {
+            linearLayout1.visibility = View.VISIBLE
+            linearLayout2.visibility = View.INVISIBLE
+            linearLayout3.visibility = View.INVISIBLE
+            linearLayout4.visibility = View.INVISIBLE
+            linearLayout5.visibility = View.INVISIBLE
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         switch1.text = "偵測"
         switch1.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { btnView, isChecked ->
@@ -355,4 +425,5 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 }

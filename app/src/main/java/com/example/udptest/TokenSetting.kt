@@ -32,7 +32,7 @@ class TokenSetting{
     }
     fun deleteToken(number : String?){
         val key = "Pair"+number
-        Log.d("test token: ",key)
+        Log.d("delete token: ",key)
         val ids = sharedPreferences!!.getString(key, "")
         if(ids!=""){
             sharedPreferences!!.edit().remove(key).apply()
