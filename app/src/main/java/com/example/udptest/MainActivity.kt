@@ -95,24 +95,6 @@ class MainActivity : AppCompatActivity() {
     private var lv: ListView? = null
     private var customAdapter: CustomAdapter? = null
 
-/*
-    private val fruitlist = arrayOf("Apples", "Oranges", "Potatoes", "Tomatoes", "Grapes")
-
-    val model: ArrayList<Model>
-        get() {
-            val list = ArrayList<Model>()
-            for (i in 0..4) {
-
-                val model = Model()
-                model.setNumbers(1)
-                model.setTokens(fruitlist[i])
-                list.add(model)
-            }
-            return list
-        }
-*/
-
-
 
 
 
@@ -133,7 +115,6 @@ class MainActivity : AppCompatActivity() {
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
         linearLayout4.visibility = View.INVISIBLE
-        linearLayout5.visibility = View.INVISIBLE
         linearLayout6.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -227,7 +208,6 @@ class MainActivity : AppCompatActivity() {
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
-            linearLayout5.visibility = View.INVISIBLE
             linearLayout6.visibility = View.INVISIBLE
             return true
         }
@@ -333,26 +313,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setView(){
-        val myAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-
-        main_listview.setOnItemClickListener { adapterView, view, i, l ->
-            val msg = myAdapter.getItem(i)
-            alert ("選擇操作"){
-                positiveButton("測試配對") {
-                    Thread(Runnable {
-                        TokenSetting().testToken(msg.last().toString())
-                    }).start()
-                }
-                negativeButton("刪除配對") {
-                    Thread(Runnable {
-                        TokenSetting().deleteToken(msg.last().toString())
-                        Log.d("clear","success")
-                    }).start()
-                    myAdapter.remove(msg)
-                }
-            }.show()
-        }
-        main_listview.adapter = myAdapter
 
 
         val constrantview : ConstraintLayout = linearLayout1
@@ -370,7 +330,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout2.visibility = View.VISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
-            linearLayout5.visibility = View.INVISIBLE
+
             linearLayout6.visibility = View.INVISIBLE
         }
         next1!!.setOnClickListener {
@@ -378,7 +338,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.VISIBLE
             linearLayout4.visibility = View.INVISIBLE
-            linearLayout5.visibility = View.INVISIBLE
+
             linearLayout6.visibility = View.INVISIBLE
         }
         next2!!.setOnClickListener {
@@ -386,43 +346,18 @@ class MainActivity : AppCompatActivity() {
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
-            linearLayout5.visibility = View.INVISIBLE
+
             linearLayout6.visibility = View.INVISIBLE
         }
         pair_setting!!.setOnClickListener {
-            /*linearLayout1.visibility = View.INVISIBLE
-            linearLayout2.visibility = View.INVISIBLE
-            linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.VISIBLE
-            textView4.text = null
-            Thread(Runnable {
-                val tokenText = TokenSetting(this).listToken()
-                runOnUiThread {
-                    textView4.text = tokenText
-                }
-            }).start()*/
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
-            //linearLayout5.visibility = View.VISIBLE
+
             linearLayout6.visibility = View.VISIBLE
-            /*myAdapter.clear()
-            val msg = tokenSet.listToken()!!.split(",")
-            Log.d("msg",msg.toString())
-            runOnUiThread {
-                for(i in 0..msg.size-1){
-                        myAdapter.insert(msg[i], 0)
-                }
-            }*/
+
             customAdapter!!.refreshView()
-        }
-        go_back2!!.setOnClickListener {
-            linearLayout1.visibility = View.VISIBLE
-            linearLayout2.visibility = View.INVISIBLE
-            linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.INVISIBLE
-            linearLayout5.visibility = View.INVISIBLE
         }
 
         camera!!.setOnClickListener {

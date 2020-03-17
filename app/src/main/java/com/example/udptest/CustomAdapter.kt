@@ -58,18 +58,12 @@ class CustomAdapter(private val context: Context, private var items: ArrayList<M
         }
 
         holder.tvFruit!!.text = items!![position].getTokens()
-        holder.pairNum!!.text = items!![position].getNumbers().toString()
+        //holder.pairNum!!.text = items!![position].getNumbers().toString()
         Log.d("pairNum",items!![position].getNumbers().toString())
         holder.tokenTest!!.setTag(R.integer.btn_plus_view, convertView)
         holder.tokenTest!!.setTag(R.integer.btn_plus_pos, position)
         holder.tokenTest!!.setOnClickListener {
-           // val tempview = holder.tokenTest!!.getTag(R.integer.btn_plus_view) as View
-           // val tv = tempview.findViewById(R.id.number) as TextView
-            val pos = holder.tokenTest!!.getTag(R.integer.btn_plus_pos) as Int
 
-            // val number = Integer.parseInt(tv.text.toString()) + 1
-            /*tv.text = number.toString()
-            items[pos].setNumbers(number)*/
             Thread(Runnable {
                 TokenSetting().testToken(items!![position].getTokens()?.replace("Pair ",""))
             }).start()
@@ -78,13 +72,7 @@ class CustomAdapter(private val context: Context, private var items: ArrayList<M
         holder.tokenDelete!!.setTag(R.integer.btn_minus_view, convertView)
         holder.tokenDelete!!.setTag(R.integer.btn_minus_pos, position)
         holder.tokenDelete!!.setOnClickListener {
-            //val tempview = holder.tokenDelete!!.getTag(R.integer.btn_minus_view) as View
-            //val tv = tempview.findViewById(R.id.number) as TextView
-            //val pos = holder.tokenDelete!!.getTag(R.integer.btn_minus_pos) as Int
 
-            //val number = Integer.parseInt(tv.text.toString()) - 1
-            /*tv.text = number.toString()
-            items[pos].setNumbers(number)*/
 
             TokenSetting().deleteToken(items!![position].getTokens()?.replace("Pair ",""))
             Log.d("clear","success")
