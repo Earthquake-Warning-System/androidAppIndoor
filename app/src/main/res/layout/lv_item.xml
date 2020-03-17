@@ -11,11 +11,10 @@
 
 
         <TextView
-                android:id="@+id/animal"
+                android:id="@+id/pairName"
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="animal"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#000"
                 android:textSize="20sp" />
@@ -25,7 +24,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/number"
                 android:layout_marginLeft="20dp"
-                android:text="1"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#000" />
 
@@ -42,14 +40,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/plus"
                 android:layout_marginLeft="20dp"
-                android:text="Plus"
+                android:text="測試"
                 android:textColor="#000" />
 
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/minus"
-                android:text="Minus"
+                android:text="刪除"
                 android:textColor="#000" />
     </LinearLayout>
 </LinearLayout>

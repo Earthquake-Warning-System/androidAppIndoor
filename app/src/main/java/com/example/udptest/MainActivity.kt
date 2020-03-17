@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         var lastEv = ""
         val credit = Credibility()
         var tokenSet = TokenSetting()
-        lateinit var modelArrayList: ArrayList<Model>
+        var modelArrayList: ArrayList<Model>? = null
     }
     var textContent :String? = null
     private var detect : SetDetect? = null
@@ -95,9 +95,10 @@ class MainActivity : AppCompatActivity() {
     private var lv: ListView? = null
     private var customAdapter: CustomAdapter? = null
 
+/*
     private val fruitlist = arrayOf("Apples", "Oranges", "Potatoes", "Tomatoes", "Grapes")
 
-    private val model: ArrayList<Model>
+    val model: ArrayList<Model>
         get() {
             val list = ArrayList<Model>()
             for (i in 0..4) {
@@ -109,6 +110,7 @@ class MainActivity : AppCompatActivity() {
             }
             return list
         }
+*/
 
 
 
@@ -123,10 +125,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        lv = findViewById(R.id.lv) as ListView
-        modelArrayList = model
-        customAdapter = CustomAdapter(this)
-        lv!!.adapter = customAdapter
 
 
 
@@ -136,6 +134,7 @@ class MainActivity : AppCompatActivity() {
         linearLayout3.visibility = View.INVISIBLE
         linearLayout4.visibility = View.INVISIBLE
         linearLayout5.visibility = View.INVISIBLE
+        linearLayout6.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val message = intent!!.getStringExtra("message")
@@ -173,6 +172,19 @@ class MainActivity : AppCompatActivity() {
         setView()
         tokenSet.setShare(this.getSharedPreferences("DATA", 0))
         credit.setShare(this.getSharedPreferences("DATA", 0))
+
+
+
+        lv = findViewById(R.id.lv) as ListView
+        // modelArrayList = model
+        setArray()
+        //if(customAdapter != null)
+        customAdapter = CustomAdapter(this, modelArrayList )
+        lv!!.adapter = customAdapter
+
+
+
+
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             println("ask permission")
@@ -216,6 +228,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
             linearLayout5.visibility = View.INVISIBLE
+            linearLayout6.visibility = View.INVISIBLE
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -295,6 +308,30 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    fun setArray(){
+        val list = ArrayList<Model>()
+
+
+        val msg : String? = tokenSet.listToken()
+
+        if(msg!=""){
+            val msgList : List<String> = msg!!.split(",")
+            for (i in 0 until msgList.size-1) {
+                val model = Model()
+                model.setNumbers(msgList[i].replace("Pair ","").toInt())
+                model.setTokens(msgList[i])
+                list.add(model)
+
+            }
+            modelArrayList = list
+        }else{
+            modelArrayList = null
+        }
+        // thread problem
+
+    }
+
+
     private fun setView(){
         val myAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
 
@@ -333,18 +370,24 @@ class MainActivity : AppCompatActivity() {
             linearLayout2.visibility = View.VISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
+            linearLayout5.visibility = View.INVISIBLE
+            linearLayout6.visibility = View.INVISIBLE
         }
         next1!!.setOnClickListener {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.VISIBLE
             linearLayout4.visibility = View.INVISIBLE
+            linearLayout5.visibility = View.INVISIBLE
+            linearLayout6.visibility = View.INVISIBLE
         }
         next2!!.setOnClickListener {
             linearLayout1.visibility = View.VISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
+            linearLayout5.visibility = View.INVISIBLE
+            linearLayout6.visibility = View.INVISIBLE
         }
         pair_setting!!.setOnClickListener {
             /*linearLayout1.visibility = View.INVISIBLE
@@ -362,15 +405,17 @@ class MainActivity : AppCompatActivity() {
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
             linearLayout4.visibility = View.INVISIBLE
-            linearLayout5.visibility = View.VISIBLE
-            myAdapter.clear()
+            //linearLayout5.visibility = View.VISIBLE
+            linearLayout6.visibility = View.VISIBLE
+            /*myAdapter.clear()
             val msg = tokenSet.listToken()!!.split(",")
             Log.d("msg",msg.toString())
             runOnUiThread {
                 for(i in 0..msg.size-1){
                         myAdapter.insert(msg[i], 0)
                 }
-            }
+            }*/
+            customAdapter!!.refreshView()
         }
         go_back2!!.setOnClickListener {
             linearLayout1.visibility = View.VISIBLE
@@ -386,6 +431,7 @@ class MainActivity : AppCompatActivity() {
                     val intentIntegrator = IntentIntegrator(this@MainActivity)
                     intentIntegrator.setCameraId(0)
                     intentIntegrator.initiateScan()
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
