@@ -55,7 +55,7 @@ class UdpServer(val context: Context, socket: DatagramSocket) : Thread() {
                         }
                         "5" -> {//local server ack
                             println("Type5")
-                            println("connecting to local server")
+                            //println("connecting to local server")
                         }
                     }
                     if (true) break

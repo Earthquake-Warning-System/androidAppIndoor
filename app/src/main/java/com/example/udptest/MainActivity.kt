@@ -200,6 +200,16 @@ class MainActivity : AppCompatActivity() {
                 }
             },300000, 300000)
         }).start()
+        Thread(Runnable {
+            Timer().schedule(timerTask {
+
+                if(serverIp != "" || serverPort != 0) {
+                    //kpalive with server
+                    UdpSender(socket).kpAckSend()
+                    println("ack")
+                }
+            },30000, 30000)
+        }).start()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
