@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                         textContent = "kp num :" + kpNum +"\n" + lastKp +"\n"+ "event num :" + evNum +"\n"+ lastEv
                         debuglog.text = textContent
                         QRiv!!.setImageBitmap(null)
+                        println("refresh UI finish :　"+ Date())
                     }else if (message == "not_eq") {
                         switch1.isChecked = false
                     }
@@ -189,24 +190,28 @@ class MainActivity : AppCompatActivity() {
                 val calendar =  Calendar.getInstance()
                 calendar.setTime(date)
                 val df =  SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-                Log.d("kp time", df.format(calendar.time))
+                Log.d("kp start time", df.format(calendar.time))
                 if(serverIp != "" || serverPort != 0) {
+                    println("check ip port in main : "+ Date())
                     //kpalive with server
                     UdpSender(socket).kpAliveSend()
-
+                    println("kp finish : "+ Date())
                 }else{
+                    println("try to reconnect to cs : "+ Date())
                     UdpSender(socket).bootAskSend()
-
+                    println("reconnect finish : "+ Date())
                 }
             },300000, 300000)
         }).start()
         Thread(Runnable {
             Timer().schedule(timerTask {
-
+                //println("ack start"+ Date())
                 if(serverIp != "" || serverPort != 0) {
+                    //println("check ip port in Main")
                     //kpalive with server
                     UdpSender(socket).kpAckSend()
-                    println("ack")
+                    //println("ack finish"+ Date())
+                    println("simple ack")
                 }
             },30000, 30000)
         }).start()

@@ -24,7 +24,7 @@ class UdpSender(private val socket : DatagramSocket){
         }else if (type == 1){MainActivity.lastKp = df.format(calendar.time)}
         val intent = Intent("MyMessage")
         intent.putExtra("message", "log")
-        Log.d("kp time:",df.format(calendar.time))
+        Log.d("send broadcast:",df.format(calendar.time))
         MainActivity.broadcast?.sendBroadcast(intent)
     }
 
@@ -35,22 +35,24 @@ class UdpSender(private val socket : DatagramSocket){
         bootAsk.setServerIp("0")
         bootAsk.setServerPort(0)
         val bootaskPack = bootAsk.build().toByteArray()
-        println("bs ask")
+        println("bs ask : "+Date())
         Sender(bootstrapServerIp, bootaskPack, 7777, bootaskPack.size, socket).start()
         Thread.sleep(100)
         for (i in 1..5) {
             if (MainActivity.serverIp == "" || MainActivity.serverPort == 0) {
-                println("bs ask again")
-               Sender(bootstrapServerIp, bootaskPack, 7777, bootaskPack.size, socket).start()
+                println("bs ask again : "+Date())
+                Sender(bootstrapServerIp, bootaskPack, 7777, bootaskPack.size, socket).start()
                 Thread.sleep(100)
-            }else if(i > 4){println("connect to server error")}
+            }else if(i > 4){println("connect to server error : "+Date())}
             else{break}
         }
         Thread.sleep(100)
         if(MainActivity.serverIp != "" || MainActivity.serverPort != 0){
+            println("connect to cs success : "+ Date())
             kpAckSend()
-
             kpAliveSend()
+        }else{
+            println("boot ask fail : "+ Date())
         }
     }
     fun kpAckSend(){
@@ -68,29 +70,27 @@ class UdpSender(private val socket : DatagramSocket){
     fun kpAliveSend(){
         MainActivity.respond = 0
         val kpAlive = AddressBookProtos.kp_alive.newBuilder()
-        kpAlive.setPacketType("0")
-        kpAlive.setAliveFlag(1)
-        kpAlive.setCityCode(country)
-        kpAlive.setCountryCode(country)
-        kpAlive.setSensorId(macAddress)
+        kpAlive.packetType = "0"
+        kpAlive.aliveFlag = 1
+        kpAlive.cityCode = country
+        kpAlive.countryCode = country
+        kpAlive.sensorId = macAddress
         val kpAlivePack = kpAlive.build().toByteArray()
-        println("cs kp")
         Sender(MainActivity.serverIp, kpAlivePack, MainActivity.serverPort, kpAlivePack.size, socket).start()
+        println("send cs kp : "+ Date())
         MainActivity.kpNum++
         logTime(1)
-
-        for(i in 1..3){
-            Thread.sleep(5000)
+        for(i in 1..6){
+            Thread.sleep(3000)
             if(MainActivity.respond == 0) {
-                println("cs kp again")
+                println("kp fail ,try again : "+ Date())
                 Sender(MainActivity.serverIp, kpAlivePack, MainActivity.serverPort, kpAlivePack.size, socket).start()
+            }else if(i == 6&&MainActivity.respond == 0){
+                println("local server not respond, reconnect to bootstrap : "+ Date())
+                MainActivity.serverIp = ""
+                MainActivity.serverPort = 0
+                UdpSender(socket).bootAskSend()
             }else{break}
-        }
-        if(MainActivity.respond == 0) {
-            println("local server not respond, reconnect to bootstrap")
-            MainActivity.serverIp = ""
-            MainActivity.serverPort = 0
-            UdpSender(socket).bootAskSend()
         }
     }
     fun eqEventSend(){
