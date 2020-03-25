@@ -10,10 +10,11 @@ class FcmPush (private val context: Context){
             try {
                 val sharedPreferences =  context.getSharedPreferences("DATA", 0)
                 for (i in 0 ..3){
-                    val key = "Pair"+i
+                    val key = "Pair$i"
                     val ids = sharedPreferences.getString(key , "")
-                    if (ids!=null){
-                        FirebaseSender.pushFCMNotification(ids , title, body)
+                    if (ids!=""){
+                        val tokenArray = ids?.split(",")
+                        FirebaseSender.pushFCMNotification(tokenArray!![0] , title, body)
                     }
                 }
             } catch (e: Exception) {

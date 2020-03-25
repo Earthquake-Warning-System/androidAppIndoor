@@ -9,29 +9,38 @@ var sharedPreferences: SharedPreferences? = null
 class TokenSetting{
 
 
-    fun listToken():String?{
-
-        var allTokens : String? = ""
-        for (i in 0 ..3){
-            val key = "Pair"+i
+    fun listToken():ArrayList<TokenData>{
+        val allData = ArrayList<TokenData>(5)
+        for (i in 0..3){
+            val key = "Pair$i"
             val ids = sharedPreferences!!.getString(key , "")
+            // var data = TokenData()
             if (ids!=""){
-                allTokens += "Pair " + i.toString()  + ","
-                Log.d("token"+i, ids)
+                val tokenArray = ids?.split(",")
+                if (tokenArray?.size == 2){
+                    allData.add(TokenData(i,tokenArray[0],tokenArray[1]))
+                }else{
+                    allData.add(TokenData(i,tokenArray!![0],""))
+                }
+
+            }else{
+                allData.add(TokenData(-1,"",""))
             }
         }
-        return allTokens
+        return allData
     }
     fun testToken(number : String?){
-        val key = "Pair"+number
+        val key = "Pair$number"
         Log.d("test token: ",key)
         val ids = sharedPreferences!!.getString(key, "")
+
         if(ids!=""){
-            FirebaseSender.pushFCMNotification(ids , "TEST", "Hello")
+            val tokenArray = ids?.split(",")
+            FirebaseSender.pushFCMNotification(tokenArray!![0] , "TEST", "Hello")
         }
     }
     fun deleteToken(number : String?){
-        val key = "Pair"+number
+        val key = "Pair$number"
         Log.d("delete token: ",key)
         val ids = sharedPreferences!!.getString(key, "")
         if(ids!=""){
@@ -41,4 +50,6 @@ class TokenSetting{
     fun setShare(shared:SharedPreferences){
          sharedPreferences = shared
     }
+
+    data class TokenData(val number : Int  ,val token:String? ,val name : String )
 }

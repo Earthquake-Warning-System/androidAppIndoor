@@ -65,20 +65,17 @@ class CustomAdapter(private val context: Context, private var items: ArrayList<M
         holder.tokenTest!!.setOnClickListener {
 
             Thread(Runnable {
-                TokenSetting().testToken(items!![position].getTokens()?.replace("Pair ",""))
+                Log.d("test pair number",items!![position].getNumbers().toString())
+                TokenSetting().testToken(items!![position].getNumbers().toString())
             }).start()
         }
 
         holder.tokenDelete!!.setTag(R.integer.btn_minus_view, convertView)
         holder.tokenDelete!!.setTag(R.integer.btn_minus_pos, position)
         holder.tokenDelete!!.setOnClickListener {
-
-
-            TokenSetting().deleteToken(items!![position].getTokens()?.replace("Pair ",""))
+            TokenSetting().deleteToken(items!![position].getNumbers().toString())
             Log.d("clear","success")
-
             refreshView()
-
         }
 
         return convertView
@@ -94,21 +91,16 @@ class CustomAdapter(private val context: Context, private var items: ArrayList<M
     }
     fun refreshView(){
         val list = java.util.ArrayList<Model>()
-        val msg : String? = TokenSetting().listToken()
-
-        if(msg!=""){
-            val msgList : List<String> = msg!!.split(",")
-            for (i in 0 until msgList.size-1) {
+        val msg = TokenSetting().listToken()
+        for (i in 0..3) {
+            if (msg[i].number!=-1){
                 val model = Model()
-                model.setNumbers(msgList[i].replace("Pair ","").toInt())
-                model.setTokens(msgList[i])
+                model.setNumbers(msg[i].number)
+                model.setTokens(msg[i].name)
                 list.add(model)
-
             }
-            items = list
-        }else{
-            items = null
         }
+        items = list
         Log.d("View","refresh ListView")
         notifyDataSetChanged()
     }

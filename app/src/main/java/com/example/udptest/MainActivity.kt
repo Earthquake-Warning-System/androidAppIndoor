@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
-        linearLayout4.visibility = View.INVISIBLE
+
         linearLayout6.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        lv = findViewById(R.id.lv) as ListView
+        lv = findViewById<ListView>(R.id.lv)
         // modelArrayList = model
         setArray()
         //if(customAdapter != null)
@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.VISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.INVISIBLE
+           // linearLayout4.visibility = View.INVISIBLE
             linearLayout6.visibility = View.INVISIBLE
             return true
         }
@@ -269,12 +269,19 @@ class MainActivity : AppCompatActivity() {
         if (result != null) {
             if (result.contents == null) run { Toast.makeText(this, "Scan failed!", Toast.LENGTH_LONG).show() }
             else {
-                println(result.getContents().toString())
+                println(result.contents.toString())
                 val tool = Tool(this)
-                tool.addID(result.getContents().toString())
-                Thread(Runnable {
-                    FirebaseSender.pushFCMNotification(result.getContents().toString(), "Pair", "配對成功")
-                }).start()
+                val tokenArray = result.contents.split(",")
+                if(tokenArray[0]!=""&&tokenArray[1]!=""){
+                    // wait for check safe
+                    Log.d("token", tokenArray[0])
+                    Log.d("Device name", tokenArray[1])
+
+                    tool.addID(result.contents)
+                    Thread(Runnable {
+                        FirebaseSender.pushFCMNotification(tokenArray[0], "Pair", "配對成功")
+                    }).start()
+                }
             }
         }
     }
@@ -303,28 +310,21 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun setArray(){
+    private fun setArray(){
         val list = ArrayList<Model>()
-
-
-        val msg : String? = tokenSet.listToken()
-
-        if(msg!=""){
-            val msgList : List<String> = msg!!.split(",")
-            for (i in 0 until msgList.size-1) {
-                val model = Model()
-                model.setNumbers(msgList[i].replace("Pair ","").toInt())
-                model.setTokens(msgList[i])
-                list.add(model)
-
+        val msg  = tokenSet.listToken()
+            for (i in 0..3) {
+                println(i.toString()+msg[i].number)
+                if(msg[i].number!=-1) {
+                    val model = Model()
+                    model.setNumbers(msg[i].number)
+                    model.setTokens(msg[i].name)
+                    list.add(model)
+                }
             }
             modelArrayList = list
-        }else{
-            modelArrayList = null
-        }
-        // thread problem
-
     }
+        // thread problem
 
 
     private fun setView(){
@@ -344,7 +344,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.VISIBLE
             linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.INVISIBLE
+
 
             linearLayout6.visibility = View.INVISIBLE
         }
@@ -352,7 +352,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.VISIBLE
-            linearLayout4.visibility = View.INVISIBLE
+
 
             linearLayout6.visibility = View.INVISIBLE
         }
@@ -360,7 +360,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.VISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.INVISIBLE
+
 
             linearLayout6.visibility = View.INVISIBLE
         }
@@ -368,7 +368,7 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.INVISIBLE
+
 
             linearLayout6.visibility = View.VISIBLE
 
@@ -387,34 +387,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
             thread.start()
-        }
-        go_back!!.setOnClickListener{
-            linearLayout1.visibility = View.INVISIBLE
-            linearLayout2.visibility = View.VISIBLE
-            linearLayout3.visibility = View.INVISIBLE
-            linearLayout4.visibility = View.INVISIBLE
-        }
-        test_not!!.setOnClickListener{
-            if(input!!.text!= null){
-                Thread(Runnable {
-                    TokenSetting().testToken(input!!.text.toString())
-                }).start()
-            }
-            input!!.text = null
-        }
-        token_del!!.setOnClickListener{
-            Thread(Runnable {
-                if(input!!.text!= null){
-                    TokenSetting().deleteToken(input!!.text.toString())
-                    Log.d("clear","success")
-                    val tokenText = TokenSetting().listToken()
-                    Log.d("after delete",tokenText )
-                    runOnUiThread {
-                        textView4.text = tokenText
-                    }
-                }
-            }).start()
-            input!!.text = null
         }
 
 
