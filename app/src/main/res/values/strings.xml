@@ -2,6 +2,6 @@
     <string name="app_name">家用版地震偵測</string>
     <string name="create_image">產生 QR code</string>
     <string name="todo">TODO</string>
-    <string name="text1">如有使用外出版App \n 請點擊 GEN QR CODE \n\n 外出版點擊配對按鈕打開鏡頭後掃描 \n 即可收到地震通知</string>
-    <string name="text2">請將手機置於平穩的平面並接上充電器 \n\n 放置後按下開始偵測 \n\n 若手機放置不平穩則會顯示 error \n 此時請調整手機位置</string>
+    <string name="text1">"If you also use the outdoor app, please press the camera button to scan the QR code from outdoor app, then you can manage your pair by press pair button"</string>
+    <string name="text2">"Please put the phone horizontally on a stable surface and connect the charger, after that turn on detection switch." \n\n "If the phone put not horizontally enough, the switch wouldn't be turned on."</string>
 </resources>

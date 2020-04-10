@@ -5,7 +5,7 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 class KpAlive {
-    /*fun randomtime (time : Long){
+    fun randomtime (time : Long){
         Timer().schedule(timerTask {
             if(MainActivity.serverIp != "" || MainActivity.serverPort != 0) {
                 //kpalive with server
@@ -18,8 +18,8 @@ class KpAlive {
                 randomtime( (1800000..5400000).random().toLong())
             }
         },time)
-    }*/
-    fun randomtime (time : Long){
+    }
+    /*fun randomtime (time : Long){
         Timer().schedule(timerTask {
             if(MainActivity.serverIp != "" || MainActivity.serverPort != 0) {
                 //kpalive with server
@@ -30,5 +30,5 @@ class KpAlive {
                 Log.d("ask bs for cs time",time.toString())
             }
         },time, 3600000)
-    }
+    }*/
 }

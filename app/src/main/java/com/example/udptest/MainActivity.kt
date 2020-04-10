@@ -120,12 +120,12 @@ class MainActivity : AppCompatActivity() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val message = intent!!.getStringExtra("message")
                     if (message == "detect_shake") {
-                        textContent = "偵測到震動"
+                        textContent = "detected shaking"
                         layoutStatus = 1
                         detectstatus.text = textContent
                         QRiv!!.setImageResource(R.drawable.shake)
                     }else if (message == "eq") {
-                        textContent = "發生地震"
+                        textContent = "Earthquake occur!!"
                         detectstatus.text = textContent
                         layoutStatus = 1
                         QRiv!!.setImageResource(R.drawable.eq)
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                         QRiv!!.setImageBitmap(null)
                     }else if (message == "correction") {
                         println("校正中")
-                        textContent = "校正中，請勿移動手機"
+                        textContent = "correcting, don't move"
                         detectstatus.text = textContent
                         QRiv!!.setImageBitmap(null)
                     }else if (message == "log") {
@@ -184,8 +184,8 @@ class MainActivity : AppCompatActivity() {
         //connecting to country server
         Thread(Runnable {
             UdpSender(socket).bootAskSend()
-            //KpAlive().randomtime(150)
-            Timer().schedule(timerTask {
+            KpAlive().randomtime(150)
+            /*Timer().schedule(timerTask {
                 val date = Date()
                 val calendar =  Calendar.getInstance()
                 calendar.setTime(date)
@@ -197,11 +197,11 @@ class MainActivity : AppCompatActivity() {
                     UdpSender(socket).kpAliveSend()
                     println("kp finish : "+ Date())
                 }else{
-                    println("try to reconnect to cs : "+ Date())
-                    UdpSender(socket).bootAskSend()
-                    println("reconnect finish : "+ Date())
-                }
-            },300000, 300000)
+                println("try to reconnect to cs : "+ Date())
+                UdpSender(socket).bootAskSend()
+                println("reconnect finish : "+ Date())
+            }
+            },300000, 300000)*/
         }).start()
         Thread(Runnable {
             Timer().schedule(timerTask {
@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        switch1.text = "偵測"
+        switch1.text = "detection"
         switch1.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { btnView, isChecked ->
             xValue = (x.absoluteValue - 9.80665).absoluteValue
             yValue = (y.absoluteValue - 9.80665).absoluteValue
@@ -237,27 +237,27 @@ class MainActivity : AppCompatActivity() {
             if (isChecked) {
                 println(xValue)
                 if(xValue<0.3||yValue<0.3||zValue<0.3){
-                    switch1.text = "偵測"
+                    //switch1.text = "偵測"
                     if(detect == null){
                         detect = SetDetect()
                         detect?.turnOn()
                         textContent = "start detecting"
                         println("start")
-                        detectstatus.setText(textContent)
+                        detectstatus.text = textContent
                     }
                 }else{
-                    textContent = "請擺正手機"
-                    detectstatus.setText(textContent)
+                    textContent = "put the phone horizontally\n"
+                    detectstatus.text = textContent
                     switch1.isChecked = false
                 }
             } else {
-                switch1.text = "偵測"
+                //switch1.text = "偵測"
                 if(detect!=null){
                     detect?.turnOff()
                     textContent = "end detecting"
                     println("end")
                     detect = null
-                    detectstatus.setText(textContent)
+                    detectstatus.text = textContent
                 }
             }
         })
