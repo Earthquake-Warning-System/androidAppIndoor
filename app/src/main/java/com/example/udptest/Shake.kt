@@ -2,13 +2,14 @@ package com.example.udptest
 
 import android.content.Intent
 import android.util.Log
+import com.example.udptest.MainActivity.Singleton.socket
 import kotlin.math.absoluteValue
 
 class Shake(private val eqValue :Double) {
     fun detected(){
         if(MainActivity.timeCounter == 0){
             if (MainActivity.serverIp != "" || MainActivity.serverPort != 0) {
-                UdpSender(MainActivity.socket).eqEventSend()
+                UdpSender(socket).eqEventSend()
             }
             MainActivity.timeCounter = 3000
         }

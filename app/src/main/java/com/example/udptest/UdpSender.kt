@@ -3,7 +3,7 @@ package com.example.udptest
 import android.content.Intent
 import android.util.Log
 import com.example.tutorial.AddressBookProtos
-import com.example.udptest.credibility.Credibility
+
 import java.io.IOException
 import java.net.*
 import java.util.*

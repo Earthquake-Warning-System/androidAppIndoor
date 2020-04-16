@@ -1,6 +1,6 @@
 package com.example.udptest;
 
-import android.graphics.Bitmap;
+
 import org.json.JSONObject;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;

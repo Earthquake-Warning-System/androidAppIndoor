@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">家用版地震偵測</string>
-    <string name="create_image">產生 QR code</string>
     <string name="todo">TODO</string>
     <string name="text1">"If you also use the outdoor app, please press the camera button to scan the QR code from outdoor app, then you can manage your pair by press pair button"</string>
     <string name="text2">"Please put the phone horizontally on a stable surface and connect the charger, after that turn on detection switch." \n\n "If the phone put not horizontally enough, the switch wouldn't be turned on."</string>

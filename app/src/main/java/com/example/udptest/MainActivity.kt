@@ -23,27 +23,27 @@ import kotlinx.android.synthetic.main.activity_main.next2
 import kotlin.math.absoluteValue
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.media.session.MediaSession
 import android.view.KeyEvent
 import android.view.Menu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.udptest.credibility.Credibility
 import com.google.zxing.integration.android.IntentIntegrator
-import org.jetbrains.anko.alert
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.concurrent.timerTask
-
 
 class MainActivity : AppCompatActivity() {
+
+
+    object Singleton{
+        var socket = DatagramSocket(8080)
+    }
 
     companion object {
         var serverIp = ""
         var serverPort = 0
         var falseAlarm = true
         var mediaPlayer: MediaPlayer? = null
-        var socket = DatagramSocket(8080)
+        //var socket = DatagramSocket(8080)
         val bell = Bell()
         var x = 0.0F
         var y = 0.0F
@@ -59,9 +59,10 @@ class MainActivity : AppCompatActivity() {
         val credit = Credibility()
         var tokenSet = TokenSetting()
         var modelArrayList: ArrayList<Model>? = null
+        var detect : SetDetect? = null
     }
     var textContent :String? = null
-    private var detect : SetDetect? = null
+
     private var layoutStatus = 0
     //Sensor
     lateinit var sensorManager: SensorManager
@@ -90,31 +91,16 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     private var lv: ListView? = null
     private var customAdapter: CustomAdapter? = null
-
-
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
-
-
-
-
-
-
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
-
         linearLayout6.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -140,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                         detectstatus.text = textContent
                         QRiv!!.setImageBitmap(null)
                     }else if (message == "log") {
-                        textContent = "kp num :" + kpNum +"\n" + lastKp +"\n"+ "event num :" + evNum +"\n"+ lastEv
+                        textContent = "kp num :$kpNum\n$lastKp\nevent num :$evNum\n$lastEv"
                         debuglog.text = textContent
                         QRiv!!.setImageBitmap(null)
                         println("refresh UI finish :　"+ Date())
@@ -155,18 +141,12 @@ class MainActivity : AppCompatActivity() {
         tokenSet.setShare(this.getSharedPreferences("DATA", 0))
         credit.setShare(this.getSharedPreferences("DATA", 0))
 
-
-
         lv = findViewById<ListView>(R.id.lv)
         // modelArrayList = model
         setArray()
         //if(customAdapter != null)
         customAdapter = CustomAdapter(this, modelArrayList )
         lv!!.adapter = customAdapter
-
-
-
-
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             println("ask permission")
@@ -180,12 +160,15 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer = MediaPlayer.create(this, R.raw.eq_warning_sound)
         mediaPlayer?.setOnPreparedListener { println("sound ready") }
         //start udp server
-        UdpServer(this, socket).start()
+        //UdpServer(this, socket).start()
         //connecting to country server
-        Thread(Runnable {
+
+        val intent =  Intent(this,UdpService::class.java)
+        startService(intent)
+        /*Thread(Runnable {
             UdpSender(socket).bootAskSend()
             KpAlive().randomtime(150)
-            /*Timer().schedule(timerTask {
+            *//*Timer().schedule(timerTask {
                 val date = Date()
                 val calendar =  Calendar.getInstance()
                 calendar.setTime(date)
@@ -201,9 +184,9 @@ class MainActivity : AppCompatActivity() {
                 UdpSender(socket).bootAskSend()
                 println("reconnect finish : "+ Date())
             }
-            },300000, 300000)*/
-        }).start()
-        Thread(Runnable {
+            },300000, 300000)*//*
+        }).start()*/
+        /*Thread(Runnable {
             Timer().schedule(timerTask {
                 //println("ack start"+ Date())
                 if(serverIp != "" || serverPort != 0) {
@@ -214,7 +197,10 @@ class MainActivity : AppCompatActivity() {
                     println("simple ack")
                 }
             },30000, 30000)
-        }).start()
+        }).start()*/
+
+
+
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -234,15 +220,15 @@ class MainActivity : AppCompatActivity() {
             xValue = (x.absoluteValue - 9.80665).absoluteValue
             yValue = (y.absoluteValue - 9.80665).absoluteValue
             zValue = (z.absoluteValue - 9.80665).absoluteValue
+            val intent2 =  Intent(this,DetectionService::class.java)
             if (isChecked) {
                 println(xValue)
                 if(xValue<0.3||yValue<0.3||zValue<0.3){
-                    //switch1.text = "偵測"
+
                     if(detect == null){
-                        detect = SetDetect()
-                        detect?.turnOn()
+
+                        startService(intent2)
                         textContent = "start detecting"
-                        println("start")
                         detectstatus.text = textContent
                     }
                 }else{
@@ -251,9 +237,10 @@ class MainActivity : AppCompatActivity() {
                     switch1.isChecked = false
                 }
             } else {
-                //switch1.text = "偵測"
+
                 if(detect!=null){
                     detect?.turnOff()
+                    stopService(intent2)
                     textContent = "end detecting"
                     println("end")
                     detect = null
@@ -344,34 +331,25 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.VISIBLE
             linearLayout3.visibility = View.INVISIBLE
-
-
             linearLayout6.visibility = View.INVISIBLE
         }
         next1!!.setOnClickListener {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.VISIBLE
-
-
             linearLayout6.visibility = View.INVISIBLE
         }
         next2!!.setOnClickListener {
             linearLayout1.visibility = View.VISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
-
-
             linearLayout6.visibility = View.INVISIBLE
         }
         pair_setting!!.setOnClickListener {
             linearLayout1.visibility = View.INVISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
-
-
             linearLayout6.visibility = View.VISIBLE
-
             customAdapter!!.refreshView()
         }
 
