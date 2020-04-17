@@ -184,8 +184,8 @@ class MainActivity : AppCompatActivity() {
         //connecting to country server
         Thread(Runnable {
             UdpSender(socket).bootAskSend()
-            //KpAlive().randomtime(150)
-            Timer().schedule(timerTask {
+            KpAlive().randomtime(150)
+            /*Timer().schedule(timerTask {
                 val date = Date()
                 val calendar =  Calendar.getInstance()
                 calendar.setTime(date)
@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                     UdpSender(socket).bootAskSend()
                     println("reconnect finish : "+ Date())
                 }
-            },300000, 300000)
+            },300000, 300000)*/
         }).start()
         Thread(Runnable {
             Timer().schedule(timerTask {
@@ -272,15 +272,17 @@ class MainActivity : AppCompatActivity() {
                 println(result.contents.toString())
                 val tool = Tool(this)
                 val tokenArray = result.contents.split(",")
-                if(tokenArray[0]!=""&&tokenArray[1]!=""){
-                    // wait for check safe
-                    Log.d("token", tokenArray[0])
-                    Log.d("Device name", tokenArray[1])
+                if(tokenArray.size==2){
+                    if(tokenArray[0]!=""&&tokenArray[1]!=""){
+                        // wait for check safe
+                        Log.d("token", tokenArray[0])
+                        Log.d("Device name", tokenArray[1])
 
-                    tool.addID(result.contents)
-                    Thread(Runnable {
-                        FirebaseSender.pushFCMNotification(tokenArray[0], "Pair", "配對成功")
-                    }).start()
+                        tool.addID(result.contents)
+                        Thread(Runnable {
+                            FirebaseSender.pushFCMNotification(tokenArray[0], "Pair", "配對成功")
+                        }).start()
+                    }
                 }
             }
         }

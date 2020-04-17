@@ -30,6 +30,7 @@ public class FirebaseSender {
         info.put("body", body); // Notification body
         info.put("sound",  "eq_warning_sound.mp3");
         json.put("data", info);
+        json.put("notification",info);
         json.put("priority","high");
 
         OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());

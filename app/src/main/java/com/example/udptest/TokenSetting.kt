@@ -17,10 +17,10 @@ class TokenSetting{
             // var data = TokenData()
             if (ids!=""){
                 val tokenArray = ids?.split(",")
-                if (tokenArray?.size == 2){
-                    allData.add(TokenData(i,tokenArray[0],tokenArray[1]))
-                }else{
-                    allData.add(TokenData(i,tokenArray!![0],""))
+                when {
+                    tokenArray?.size == 2 -> allData.add(TokenData(i,tokenArray[0],tokenArray[1]))
+                    tokenArray?.size == 3 -> allData.add(TokenData(i,tokenArray[0],tokenArray[1]))
+                    else -> allData.add(TokenData(i,tokenArray!![0],""))
                 }
 
             }else{
