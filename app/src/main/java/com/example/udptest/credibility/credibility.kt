@@ -9,34 +9,51 @@ var sharedPreferences: SharedPreferences? = null
 
 class Credibility{
 
-    fun dateCount(eqtime : Long):Int{
+    fun dateCount(eqTime : Long):Int{
 
         if (MainActivity.falseAlarm){
             val eqT = sharedPreferences!!.getString("eqLast", "")
 
             Log.d("eqget",eqT)
-            val Eqtime = eqtime
-            Log.d("Eqtime",  eqtime.toString())
+            Log.d("Eqtime",  eqTime.toString())
             if(eqT==""){
-                sharedPreferences!!.edit().putString("eqLast", Eqtime.toString()).apply()
+                sharedPreferences!!.edit().putString("eqLast", eqTime.toString()).apply()
                 return 100
             }
-            val dif = Eqtime - eqT!!.toLong()
-            Log.d("dif", (Eqtime - eqT!!.toLong()).toString())
-            if (dif >= 75600000){ valueOfReliable = 100
-            }else if(dif <= 75600000 && dif >= 64800000){valueOfReliable = 85
-            }else if(dif <= 64800000 && dif >= 43200000){valueOfReliable = 60
-            }else if(dif <= 43200000 && dif >= 32400000){valueOfReliable = 40
-            }else if(dif <= 32400000 && dif >= 21600000){valueOfReliable = 25
-            }else if(dif <= 21600000 && dif >= 10800000){valueOfReliable = 15
-            }else if(dif <= 10800000 && dif >= 0){valueOfReliable = 10
-            }else{valueOfReliable = 1
-                println("credibility error")
+
+            if(MainActivity.serverIp != "" || MainActivity.serverPort != 0) {
+                val dif = eqTime - eqT!!.toLong()
+                Log.d("dif", (eqTime - eqT!!.toLong()).toString())
+                when {
+                    dif >= 75600000 -> {
+                        valueOfReliable = 100
+                    }
+                    dif in 64800000..75600000 -> {
+                        valueOfReliable = 85
+                    }
+                    dif in 43200000..64800000 -> {
+                        valueOfReliable = 60
+                    }
+                    dif in 32400000..43200000 -> {
+                        valueOfReliable = 40
+                    }
+                    dif in 21600000..32400000 -> {
+                        valueOfReliable = 25
+                    }
+                    dif in 10800000..21600000 -> {
+                        valueOfReliable = 15
+                    }
+                    dif in 0..10800000 -> {
+                        valueOfReliable = 10
+                    }
+                    else -> {
+                        valueOfReliable = 1
+                        println("credibility error")
+                    }
+                }
+                sharedPreferences!!.edit().putString("eqLast", eqTime.toString()).apply()
+                Log.d("eqset", eqTime.toString())
             }
-
-            sharedPreferences!!.edit().putString("eqLast", Eqtime.toString()).apply()
-            Log.d("eqset",Eqtime.toString())
-
             return  valueOfReliable
         }else{
             valueOfReliable =100
