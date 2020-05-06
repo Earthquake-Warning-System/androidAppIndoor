@@ -1,8 +1,10 @@
 package com.example.udptest
 
 import android.content.Intent
+import android.util.Log
+import com.example.udptest.Singleton.broadcast
 
-class Calculation(private val listener: OnResultListener) {
+class Calculation(private val listener: OnResultListener, val name:String) {
 
     interface OnResultListener {
         fun onOccur(x:Double)
@@ -53,8 +55,9 @@ class Calculation(private val listener: OnResultListener) {
                     if(estimatedValue> largest){
                         val intent = Intent("MyMessage") // "MyMessage" 為自定義的 Intent action 名稱
                         intent.putExtra("message", "not_eq")
-                        MainActivity.broadcast?.sendBroadcast(intent)
+                        broadcast?.sendBroadcast(intent)
                     }else if(isEqOccur(estimatedValue)) {
+                        Log.d("detect name",name)
                         listener.onOccur(estimatedValue)
                     }
                     indexOfOldestTurningPoint = turningPointWindow.checkAndGetPositionIndex(-windowSizesForTurningPoint + 1)
@@ -73,13 +76,13 @@ class Calculation(private val listener: OnResultListener) {
             1 -> {averageAccZDiff = currAccZDiff
                 val intent = Intent("MyMessage")
                 intent.putExtra("message", "correction")
-                MainActivity.broadcast?.sendBroadcast(intent)
+                broadcast?.sendBroadcast(intent)
             }
             in 2..countOfAccZDiff -> {averageAccZDiff = averageAccZDiff / 2 + currAccZDiff / 2
                 if(accZDiffSample == 295){
                     val intent = Intent("MyMessage")
                     intent.putExtra("message", "normal")
-                    MainActivity.broadcast?.sendBroadcast(intent)
+                    broadcast?.sendBroadcast(intent)
                 }
             }
         }

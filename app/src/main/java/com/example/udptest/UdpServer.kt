@@ -4,11 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.example.tutorial.AddressBookProtos
+import com.example.udptest.Singleton.bell
+import com.example.udptest.Singleton.broadcast
+import com.example.udptest.Singleton.falseAlarm
+import com.example.udptest.Singleton.respond
+import com.example.udptest.Singleton.ringStatus
+import com.example.udptest.Singleton.serverIp
+import com.example.udptest.Singleton.serverPort
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 
-class UdpServer(val context: Context, socket: DatagramSocket) : Thread() {
+class UdpServer(private val context: Context, socket: DatagramSocket) : Thread() {
     private var server: DatagramSocket? = null
 
     init {
@@ -27,38 +34,38 @@ class UdpServer(val context: Context, socket: DatagramSocket) : Thread() {
                     val type = AddressBookProtos.packet_type.parseFrom(buf)
                     println("------udp server state------")
                     when (type.packetType) {
-                        "0" -> {//recive server respond
+                        "0" -> {//receive server respond
                             println("Type0")
-                            println("recive server kp respond")
-                            MainActivity.respond = 1
+                            println("receive server kp respond")
+                            respond = 1
                         }
                         "2" -> {//eq occur
                             println("Type2")
                             println("earthquake occur!!")
-                            MainActivity.ringStatus = 1
-                            MainActivity.bell.ring(1.0F,30000)
-                            MainActivity.falseAlarm = false
+                            ringStatus = 1
+                            bell.ring(1.0F,30000)
+                            falseAlarm = false
                             FcmPush(context).pushFCMmessage("shake", "shake!")
                             val intent = Intent("MyMessage")
                             intent.putExtra("message", "eq")
-                            MainActivity.broadcast?.sendBroadcast(intent)
+                            broadcast?.sendBroadcast(intent)
                             sleep(5000)
                         }
                         "3" -> {//get local server ip and port
                             val data3 = AddressBookProtos.Boot_ask.parseFrom(buf)
                             println("Type3")
                             println("get local server ip and port")
-                            MainActivity.serverIp = data3.serverIp
-                            MainActivity.serverPort = data3.serverPort
-                            Log.d("server ip:", MainActivity.serverIp)
-                            Log.d("server port:", MainActivity.serverPort.toString())
+                            serverIp = data3.serverIp
+                            serverPort = data3.serverPort
+                            Log.d("server ip:", serverIp)
+                            Log.d("server port:", serverPort.toString())
                         }
                         "5" -> {//local server ack
                             println("Type5")
                             //println("connecting to local server")
                         }
                     }
-                    if (true) break
+                    break
                 }
                 //CloseSocket(client)
             }

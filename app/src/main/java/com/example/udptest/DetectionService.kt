@@ -1,32 +1,69 @@
 package com.example.udptest
 
+import android.annotation.SuppressLint
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.os.PowerManager
+import android.os.PowerManager.PARTIAL_WAKE_LOCK
 import android.util.Log
-import com.example.udptest.MainActivity.Companion.detect
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.content.ContextCompat.getSystemService
+import com.example.udptest.Singleton.detect
+import com.example.udptest.Singleton.onCreateNum
+import org.jetbrains.anko.powerManager
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 
+val schedule = Executors.newScheduledThreadPool(2)!!
+
+lateinit var wakeLock : PowerManager.WakeLock
+var status : Boolean = false
+lateinit var future : ScheduledFuture<*>
 
 class DetectionService : Service() {
     private val mBinder = MyBinder()
+
+    @SuppressLint("InvalidWakeLockTag")
     override fun onCreate() {
         super.onCreate()
+        //val pm = getSystemService(Context.POWER_SERVICE)
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"mytag")
+        wakeLock.acquire()
+        status = true
+        onCreateNum ++
+
         Log.d(TAG, "onCreate() executed")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         Log.d(TAG, "onStartCommand() executed")
-        detect = SetDetect()
-        detect?.turnOn()
-        println("start")
+        Thread(Runnable {
+            detect = SetDetect()
+            detect?.turnOn()
+        }).start()
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if(status){
+            wakeLock.release()
+            status = false
+        }
 
+        future.cancel(true)
+
+        //schedule.shutdown()
+        /*if (!schedule.isShutdown){
+            Thread.sleep(1000)
+        }*/
+        /*if(!schedule.awaitTermination(3, TimeUnit.SECONDS)){
+            schedule.shutdownNow()
+        }*/
         Log.d(TAG, "onDestroy() executed")
     }
 

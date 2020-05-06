@@ -1,6 +1,7 @@
 package com.example.udptest
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,7 +11,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.MediaPlayer
 import android.os.Bundle
-import java.net.DatagramSocket
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -27,40 +27,19 @@ import android.view.KeyEvent
 import android.view.Menu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.udptest.credibility.Credibility
+import com.example.udptest.Singleton.evNum
+import com.example.udptest.Singleton.kpNum
+import com.example.udptest.Singleton.lastEv
+import com.example.udptest.Singleton.lastKp
 import com.google.zxing.integration.android.IntentIntegrator
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
 
-    object Singleton{
-        var socket = DatagramSocket(8080)
-    }
 
-    companion object {
-        var serverIp = ""
-        var serverPort = 0
-        var falseAlarm = true
-        var mediaPlayer: MediaPlayer? = null
-        //var socket = DatagramSocket(8080)
-        val bell = Bell()
-        var x = 0.0F
-        var y = 0.0F
-        var z = 0.0F
-        var respond = 0
-        var timeCounter = 0
-        var ringStatus = 0
-        var broadcast : LocalBroadcastManager? = null
-        var kpNum = 0
-        var evNum = 0
-        var lastKp = ""
-        var lastEv = ""
-        val credit = Credibility()
-        var tokenSet = TokenSetting()
-        var modelArrayList: ArrayList<Model>? = null
-        var detect : SetDetect? = null
-    }
+
+
     var textContent :String? = null
 
     private var layoutStatus = 0
@@ -79,9 +58,9 @@ class MainActivity : AppCompatActivity() {
             if (event == null) Log.d("sensor", "事件為空")
             when (event!!.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
-                    x = event.values[0]
-                    y = event.values[1]
-                    z = event.values[2]
+                    Singleton.x = event.values[0]
+                    Singleton.y = event.values[1]
+                    Singleton.z = event.values[2]
                 }
                 else -> {
                     Log.d("sensor", "未知的感測器觸發")
@@ -103,49 +82,63 @@ class MainActivity : AppCompatActivity() {
         linearLayout3.visibility = View.INVISIBLE
         linearLayout6.visibility = View.INVISIBLE
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
+            @SuppressLint("SetTextI18n")
             override fun onReceive(context: Context?, intent: Intent?) {
                 val message = intent!!.getStringExtra("message")
-                    if (message == "detect_shake") {
+                when (message) {
+                    "detect_shake" -> {
                         textContent = "detected shaking"
                         layoutStatus = 1
                         detectstatus.text = textContent
                         QRiv!!.setImageResource(R.drawable.shake)
-                    }else if (message == "eq") {
+                    }
+                    "eq" -> {
                         textContent = "Earthquake occur!!"
                         detectstatus.text = textContent
                         layoutStatus = 1
                         QRiv!!.setImageResource(R.drawable.eq)
-                    }else if (message == "normal") {
+                    }
+                    "normal" -> {
                         println("normal")
                         textContent = "start detecting"
                         detectstatus.text = textContent
                         QRiv!!.setImageBitmap(null)
-                    }else if (message == "correction") {
+                    }
+                    "correction" -> {
                         println("校正中")
                         textContent = "correcting, don't move"
                         detectstatus.text = textContent
                         QRiv!!.setImageBitmap(null)
-                    }else if (message == "log") {
+                    }
+                    "log" -> {
                         textContent = "kp num :$kpNum\n$lastKp\nevent num :$evNum\n$lastEv"
                         debuglog.text = textContent
                         QRiv!!.setImageBitmap(null)
                         println("refresh UI finish :　"+ Date())
-                    }else if (message == "not_eq") {
+                    }
+                    "not_eq" -> {
                         switch1.isChecked = false
                     }
+                    "not_horizontal" -> {
+                        detectstatus.text = "put the phone horizontally"
+                    }
+                    "end_detect" ->{
+                        detectstatus.text = "end detecting"
+                    }
+                }
             }
         }, IntentFilter("MyMessage"))
-        broadcast= LocalBroadcastManager.getInstance(this)
+        Singleton.broadcast= LocalBroadcastManager.getInstance(this)
         //setLayout
         setView()
-        tokenSet.setShare(this.getSharedPreferences("DATA", 0))
-        credit.setShare(this.getSharedPreferences("DATA", 0))
+        Singleton.tokenSet.setShare(this.getSharedPreferences("DATA", 0))
+        Singleton.credit.setShare(this.getSharedPreferences("DATA", 0))
 
         lv = findViewById<ListView>(R.id.lv)
         // modelArrayList = model
         setArray()
         //if(customAdapter != null)
-        customAdapter = CustomAdapter(this, modelArrayList )
+        customAdapter = CustomAdapter(this, Singleton.modelArrayList )
         lv!!.adapter = customAdapter
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -157,8 +150,8 @@ class MainActivity : AppCompatActivity() {
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sensorManager.registerListener(eventListener, sensor, SensorManager.SENSOR_DELAY_FASTEST)
         //set ring
-        mediaPlayer = MediaPlayer.create(this, R.raw.eq_warning_sound)
-        mediaPlayer?.setOnPreparedListener { println("sound ready") }
+        Singleton.mediaPlayer = MediaPlayer.create(this, R.raw.eq_warning_sound)
+        Singleton.mediaPlayer?.setOnPreparedListener { println("sound ready") }
         //start udp server
         //UdpServer(this, socket).start()
         //connecting to country server
@@ -208,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                     //kpalive with server
                     UdpSender(socket).kpAckSend()
                     //println("ack finish"+ Date())
-                    println("simple ack")
+
                 }
             },30000, 30000)
         }).start()*/
@@ -222,7 +215,6 @@ class MainActivity : AppCompatActivity() {
             linearLayout1.visibility = View.VISIBLE
             linearLayout2.visibility = View.INVISIBLE
             linearLayout3.visibility = View.INVISIBLE
-           // linearLayout4.visibility = View.INVISIBLE
             linearLayout6.visibility = View.INVISIBLE
             return true
         }
@@ -231,34 +223,37 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         switch1.text = "detection"
         switch1.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { btnView, isChecked ->
-            xValue = (x.absoluteValue - 9.80665).absoluteValue
-            yValue = (y.absoluteValue - 9.80665).absoluteValue
-            zValue = (z.absoluteValue - 9.80665).absoluteValue
+            xValue = (Singleton.x.absoluteValue - 9.80665).absoluteValue
+            yValue = (Singleton.y.absoluteValue - 9.80665).absoluteValue
+            zValue = (Singleton.z.absoluteValue - 9.80665).absoluteValue
             val intent2 =  Intent(this,DetectionService::class.java)
             if (isChecked) {
                 println(xValue)
                 if(xValue<0.3||yValue<0.3||zValue<0.3){
 
-                    if(detect == null){
+                    if(Singleton.detect == null){
 
                         startService(intent2)
-                        textContent = "start detecting"
-                        detectstatus.text = textContent
+
                     }
                 }else{
-                    textContent = "put the phone horizontally\n"
-                    detectstatus.text = textContent
+
+                    val intent = Intent("MyMessage")
+                    intent.putExtra("message", "not_horizontal")
+                    Singleton.broadcast?.sendBroadcast(intent)
+
                     switch1.isChecked = false
                 }
             } else {
 
-                if(detect!=null){
-                    detect?.turnOff()
+                if(Singleton.detect!=null){
                     stopService(intent2)
-                    textContent = "end detecting"
+                    val intent = Intent("MyMessage")
+                    intent.putExtra("message", "end_detect")
+                    Singleton.broadcast?.sendBroadcast(intent)
                     println("end")
-                    detect = null
-                    detectstatus.text = textContent
+                    Singleton.detect = null
+
                 }
             }
         })
@@ -288,34 +283,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    class Bell{
-        fun ring(vol:Float,ringTime:Long){
-            if (mediaPlayer?.isPlaying==false){
-                Thread(Runnable {
-                    mediaPlayer?.setVolume(vol, vol)
-                    mediaPlayer?.start()
-                    Thread.sleep(ringTime)
-                    mediaPlayer?.pause()
-                    mediaPlayer?.seekTo(0)
-                    println("shake ring work sucess")
-                    if(ringStatus == 1){
-                        mediaPlayer?.setVolume(1.0F, 1.0F)
-                        mediaPlayer?.start()
-                        Thread.sleep(30000)
-                        mediaPlayer?.pause()
-                        mediaPlayer?.seekTo(0)
-                        println("eq ring work sucess")
-                        ringStatus = 0
-                    }
-                }).start()
-            }
-        }
-    }
+
 
 
     private fun setArray(){
         val list = ArrayList<Model>()
-        val msg  = tokenSet.listToken()
+        val msg  = Singleton.tokenSet.listToken()
             for (i in 0..3) {
                 println(i.toString()+msg[i].number)
                 if(msg[i].number!=-1) {
@@ -325,7 +298,7 @@ class MainActivity : AppCompatActivity() {
                     list.add(model)
                 }
             }
-            modelArrayList = list
+        Singleton.modelArrayList = list
     }
         // thread problem
 

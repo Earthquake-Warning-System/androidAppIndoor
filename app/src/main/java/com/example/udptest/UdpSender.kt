@@ -1,8 +1,19 @@
 package com.example.udptest
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import com.example.tutorial.AddressBookProtos
+import com.example.udptest.Singleton.broadcast
+import com.example.udptest.Singleton.credit
+import com.example.udptest.Singleton.evNum
+import com.example.udptest.Singleton.falseAlarm
+import com.example.udptest.Singleton.kpNum
+import com.example.udptest.Singleton.lastEv
+import com.example.udptest.Singleton.lastKp
+import com.example.udptest.Singleton.respond
+import com.example.udptest.Singleton.serverIp
+import com.example.udptest.Singleton.serverPort
 
 import java.io.IOException
 import java.net.*
@@ -15,31 +26,32 @@ class UdpSender(private val socket : DatagramSocket){
     private val macAddress = Macaddress.getMacAddr()
     private val country = Locale.getDefault().displayCountry
 
+    @SuppressLint("SimpleDateFormat")
     fun logTime(type:Int){
         val date = Date()
         val calendar =  Calendar.getInstance()
-        calendar.setTime(date)
+        calendar.time = date
         val df =  SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-        if (type == 0){ MainActivity.lastEv = df.format(calendar.time)
-        }else if (type == 1){MainActivity.lastKp = df.format(calendar.time)}
+        if (type == 0){ lastEv = df.format(calendar.time)
+        }else if (type == 1){lastKp = df.format(calendar.time)}
         val intent = Intent("MyMessage")
         intent.putExtra("message", "log")
         Log.d("send broadcast:",df.format(calendar.time))
-        MainActivity.broadcast?.sendBroadcast(intent)
+        broadcast?.sendBroadcast(intent)
     }
 
     fun bootAskSend(){
         val bootAsk = AddressBookProtos.Boot_ask.newBuilder()
-        bootAsk.setPacketType("3")
-        bootAsk.setVersion("1.0.0")
-        bootAsk.setServerIp("0")
-        bootAsk.setServerPort(0)
+        bootAsk.packetType = "3"
+        bootAsk.version = "1.0.0"
+        bootAsk.serverIp = "0"
+        bootAsk.serverPort = 0
         val bootaskPack = bootAsk.build().toByteArray()
         println("bs ask : "+Date())
         Sender(bootstrapServerIp, bootaskPack, 7777, bootaskPack.size, socket).start()
         Thread.sleep(100)
         for (i in 1..5) {
-            if (MainActivity.serverIp == "" || MainActivity.serverPort == 0) {
+            if (serverIp == "" || serverPort == 0) {
                 println("bs ask again : "+Date())
                 Sender(bootstrapServerIp, bootaskPack, 7777, bootaskPack.size, socket).start()
                 Thread.sleep(100)
@@ -47,7 +59,7 @@ class UdpSender(private val socket : DatagramSocket){
             else{break}
         }
         Thread.sleep(100)
-        if(MainActivity.serverIp != "" || MainActivity.serverPort != 0){
+        if(serverIp != "" || serverPort != 0){
             println("connect to cs success : "+ Date())
             kpAckSend()
             kpAliveSend()
@@ -58,17 +70,17 @@ class UdpSender(private val socket : DatagramSocket){
     fun kpAckSend(){
         Thread.sleep(5000)
         //connect to nearest server
-        if (MainActivity.serverIp != "" || MainActivity.serverPort != 0) {
+        if (serverIp != "" || serverPort != 0) {
             val kpAck = AddressBookProtos.kp_alive_ack.newBuilder()
-            kpAck.setPacketType("5")
-            kpAck.setVersion("1.0.0")
+            kpAck.packetType = "5"
+            kpAck.version = "1.0.0"
             val kpAckPack = kpAck.build().toByteArray()
             println("cs ack")
-            Sender(MainActivity.serverIp, kpAckPack, MainActivity.serverPort, kpAckPack.size, socket).start()
+            Sender(serverIp, kpAckPack, serverPort, kpAckPack.size, socket).start()
         }
     }
     fun kpAliveSend(){
-        MainActivity.respond = 0
+        respond = 0
         val kpAlive = AddressBookProtos.kp_alive.newBuilder()
         kpAlive.packetType = "0"
         kpAlive.aliveFlag = 1
@@ -76,19 +88,19 @@ class UdpSender(private val socket : DatagramSocket){
         kpAlive.countryCode = country
         kpAlive.sensorId = macAddress
         val kpAlivePack = kpAlive.build().toByteArray()
-        Sender(MainActivity.serverIp, kpAlivePack, MainActivity.serverPort, kpAlivePack.size, socket).start()
-        println("send cs kp : "+ Date())
-        MainActivity.kpNum++
+        Sender(serverIp, kpAlivePack, serverPort, kpAlivePack.size, socket).start()
+        println("send cs kp : "+ Date() + "kp number " + kpNum+1)
+        kpNum++
         logTime(1)
         for(i in 1..6){
             Thread.sleep(3000)
-            if(MainActivity.respond == 0) {
+            if(respond == 0) {
                 println("kp fail ,try again : "+ Date())
-                Sender(MainActivity.serverIp, kpAlivePack, MainActivity.serverPort, kpAlivePack.size, socket).start()
-            }else if(i == 6&&MainActivity.respond == 0){
+                Sender(serverIp, kpAlivePack, serverPort, kpAlivePack.size, socket).start()
+            }else if(i == 6&&respond == 0){
                 println("local server not respond, reconnect to bootstrap : "+ Date())
-                MainActivity.serverIp = ""
-                MainActivity.serverPort = 0
+                serverIp = ""
+                serverPort = 0
                 UdpSender(socket).bootAskSend()
             }else{break}
         }
@@ -99,20 +111,20 @@ class UdpSender(private val socket : DatagramSocket){
         val ts = date.getTime()
         val tsSec = (ts.toDouble() / 1000).toInt()
         val tsUsec = ts % 1000
-        MainActivity.evNum++
+        evNum++
         logTime(0)
-        val credit = MainActivity.credit.dateCount(ts)
+        val credit = credit.dateCount(ts)
         Log.d("credit" , credit.toString() )
-        eqEvent.setPacketType("1")
-        eqEvent.setEventSec(tsSec.toLong())
-        eqEvent.setEventOutput(credit)
-        eqEvent.setEventUsec(tsUsec)
-        eqEvent.setSensorId(macAddress)
-        eqEvent.setVersion("1.0.0")
+        eqEvent.packetType = "1"
+        eqEvent.eventSec = tsSec.toLong()
+        eqEvent.eventOutput = credit
+        eqEvent.eventUsec = tsUsec
+        eqEvent.sensorId = macAddress
+        eqEvent.version = "1.0.0"
         val eqEventPack = eqEvent.build().toByteArray()
         println("eq send!!")
-        Sender(MainActivity.serverIp, eqEventPack, MainActivity.serverPort, eqEventPack.size, socket).start()
-        MainActivity.falseAlarm = true
+        Sender(serverIp, eqEventPack,serverPort, eqEventPack.size, socket).start()
+        falseAlarm = true
     }
 
 

@@ -2,7 +2,9 @@ package com.example.udptest.credibility
 
 import android.content.SharedPreferences
 import android.util.Log
-import com.example.udptest.MainActivity
+import com.example.udptest.Singleton.falseAlarm
+import com.example.udptest.Singleton.serverIp
+import com.example.udptest.Singleton.serverPort
 
 var valueOfReliable: Int = 100
 var sharedPreferences: SharedPreferences? = null
@@ -11,7 +13,7 @@ class Credibility{
 
     fun dateCount(eqTime : Long):Int{
 
-        if (MainActivity.falseAlarm){
+        if (falseAlarm){
             val eqT = sharedPreferences!!.getString("eqLast", "")
 
             Log.d("eqget",eqT)
@@ -21,7 +23,7 @@ class Credibility{
                 return 100
             }
 
-            if(MainActivity.serverIp != "" || MainActivity.serverPort != 0) {
+            if(serverIp != "" || serverPort != 0) {
                 val dif = eqTime - eqT!!.toLong()
                 Log.d("dif", (eqTime - eqT!!.toLong()).toString())
                 when {

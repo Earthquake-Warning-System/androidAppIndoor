@@ -2,111 +2,103 @@ package com.example.udptest
 
 
 import android.content.Intent
+import android.util.Log
+import com.example.udptest.Singleton.broadcast
+import com.example.udptest.Singleton.timeCounter
+import com.example.udptest.Singleton.x
+import com.example.udptest.Singleton.y
+import com.example.udptest.Singleton.z
+import java.util.*
 
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
 
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.schedule
+import kotlin.concurrent.timerTask
 
 import kotlin.math.absoluteValue
 
-class SetDetect {
-    private val schedule = Executors.newScheduledThreadPool(2)
+
+class SetDetect() {
+    private val timer = Timer()
+
     private val eqCtx = Calculation(object : Calculation.OnResultListener {
         override fun onOccur(x: Double) {
             Shake(x).detected()
         }
-    })
+    },"thread pool")
+
     fun turnOn() {
 
-        val xValue = (MainActivity.x.absoluteValue - 9.80665).absoluteValue
-        val yValue = (MainActivity.y.absoluteValue - 9.80665).absoluteValue
-        val zValue = (MainActivity.z.absoluteValue - 9.80665).absoluteValue
+        val xValue = (x.absoluteValue - 9.80665).absoluteValue
+        val yValue = (y.absoluteValue - 9.80665).absoluteValue
+        val zValue = (z.absoluteValue - 9.80665).absoluteValue
         val intent = Intent("MyMessage")
         intent.putExtra("message", "normal")
         if(xValue<yValue&&xValue<zValue) {
-            schedule.scheduleAtFixedRate(Runnable {
-                if (MainActivity.timeCounter == 500){
-                    MainActivity.broadcast?.sendBroadcast(intent)
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+            future = schedule.scheduleAtFixedRate(Runnable {
+                if (timeCounter == 500){
+                    broadcast?.sendBroadcast(intent)
+                    timeCounter -= 1
                     println("normal")
-                }else if (MainActivity.timeCounter != 0){
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+                }else if (timeCounter != 0){
+                    timeCounter -= 1
                 }
-                eqCtx.computing(MainActivity.x.absoluteValue)
+                eqCtx.computing(x.absoluteValue)
             }, 0 , 20 , TimeUnit.MILLISECONDS)
 
-            /*timer.schedule(0, 20) {
-                if (MainActivity.timeCounter == 500){
-                    MainActivity.broadcast?.sendBroadcast(intent)
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
-                    println("normal")
-                }else if (MainActivity.timeCounter != 0){
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
-                }
-                eqCtx.computing(MainActivity.x.absoluteValue)
 
-            }*/
         }else if(yValue<xValue&&yValue<zValue){
 
-            schedule.scheduleAtFixedRate(Runnable {
-                if (MainActivity.timeCounter == 500){
-                    MainActivity.broadcast?.sendBroadcast(intent)
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+            future = schedule.scheduleAtFixedRate(Runnable {
+                if (timeCounter == 500){
+                    broadcast?.sendBroadcast(intent)
+                    timeCounter -= 1
                     println("normal")
-                }else if (MainActivity.timeCounter != 0){
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+                }else if (timeCounter != 0){
+                    timeCounter -= 1
                 }
-                eqCtx.computing(MainActivity.y)
+                eqCtx.computing(y)
             }, 0 , 20 , TimeUnit.MILLISECONDS)
 
 
 
-            /*timer.schedule(0, 20) {
-                if (MainActivity.timeCounter == 500){
-                    MainActivity.broadcast?.sendBroadcast(intent)
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
-                    println("normal")
-                }else if (MainActivity.timeCounter != 0){
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
-                }
-                eqCtx.computing(MainActivity.y)
-
-            }*/
         }else if(zValue<xValue&&zValue<yValue){
 
-            schedule.scheduleAtFixedRate(Runnable {
-                if (MainActivity.timeCounter == 500){
-                    MainActivity.broadcast?.sendBroadcast(intent)
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
-                    println("normal")
-                }else if (MainActivity.timeCounter != 0){
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+            future = schedule.scheduleAtFixedRate(Runnable {
+                if (timeCounter == 500){
+                    broadcast?.sendBroadcast(intent)
+                    timeCounter -= 1
+                    //println("normal")
+                }else if (timeCounter != 0){
+                    timeCounter -= 1
                 }
-                eqCtx.computing(MainActivity.z)
-
+                eqCtx.computing(z)
+               // Log.d("detectNum",z.toString())
             }, 0 , 20 , TimeUnit.MILLISECONDS)
 
 
 
+
+
+
+
             /*timer.schedule(0, 20) {
-                if (MainActivity.timeCounter == 500){
-                    MainActivity.broadcast?.sendBroadcast(intent)
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+                if (timeCounter == 500){
+                    broadcast?.sendBroadcast(intent)
+                    timeCounter -= 1
                     println("normal")
-                }else if (MainActivity.timeCounter != 0){
-                    MainActivity.timeCounter = MainActivity.timeCounter - 1
+                }else if (timeCounter != 0){
+                    timeCounter -= 1
                 }
-                eqCtx.computing(MainActivity.z)
+                eqCtx.computing(z)
 
             }*/
+
         }else{
             println("detect error")
         }
     }
-    fun turnOff() {
-        schedule.shutdown()
-        if(!schedule.awaitTermination(3,TimeUnit.SECONDS)){
-            schedule.shutdownNow()
-        }
-    }
+
 }
