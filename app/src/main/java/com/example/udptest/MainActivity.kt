@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
 
     var textContent :String? = null
-
+    private lateinit var intent2 :  Intent
     private var layoutStatus = 0
     //Sensor
     lateinit var sensorManager: SensorManager
@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     var xValue : Double = 0.0
     var yValue : Double = 0.0
     var zValue : Double = 0.0
+
 
     private val eventListener = object : SensorEventListener {
         // 當感測器的 精確度改變時，就會觸發
@@ -78,41 +79,44 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportActionBar?.hide()
+
         linearLayout1.visibility = View.INVISIBLE
         linearLayout3.visibility = View.INVISIBLE
         linearLayout6.visibility = View.INVISIBLE
+
+
         LocalBroadcastManager.getInstance(this).registerReceiver(object : BroadcastReceiver() {
             @SuppressLint("SetTextI18n")
             override fun onReceive(context: Context?, intent: Intent?) {
-                val message = intent!!.getStringExtra("message")
-                when (message) {
+                when (intent!!.getStringExtra("message")) {
                     "detect_shake" -> {
-                        textContent = "detected shaking"
+                        textContent = "Shaking detected"
                         layoutStatus = 1
                         detectstatus.text = textContent
                         QRiv!!.setImageResource(R.drawable.shake)
                     }
                     "eq" -> {
-                        textContent = "Earthquake occur!!"
+                        textContent = "Shaking occurred"
                         detectstatus.text = textContent
                         layoutStatus = 1
                         QRiv!!.setImageResource(R.drawable.eq)
                     }
                     "normal" -> {
                         println("normal")
-                        textContent = "start detecting"
+                        textContent = "Start detecting"
                         detectstatus.text = textContent
                         QRiv!!.setImageBitmap(null)
                     }
                     "correction" -> {
-                        println("校正中")
-                        textContent = "correcting, don't move"
+                        println("Correcting")
+                        textContent = "Correcting, don't move"
                         detectstatus.text = textContent
                         QRiv!!.setImageBitmap(null)
                     }
                     "log" -> {
                         textContent = "kp num :$kpNum\n$lastKp\nevent num :$evNum\n$lastEv"
-                        debuglog.text = textContent
+                        //debuglog.text = textContent
                         QRiv!!.setImageBitmap(null)
                         println("refresh UI finish :　"+ Date())
                     }
@@ -120,10 +124,10 @@ class MainActivity : AppCompatActivity() {
                         switch1.isChecked = false
                     }
                     "not_horizontal" -> {
-                        detectstatus.text = "put the phone horizontally"
+                        detectstatus.text = "Put the phone horizontally"
                     }
                     "end_detect" ->{
-                        detectstatus.text = "end detecting"
+                        detectstatus.text = "End detecting"
                     }
                 }
             }
@@ -145,6 +149,10 @@ class MainActivity : AppCompatActivity() {
             println("ask permission")
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),1 )
         }
+
+        intent2 = Intent(this,DetectionService::class.java)
+
+
         //Sensor
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -210,6 +218,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        stopService(intent2)
+        stopService(intent)
+    }
+
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if ((keyCode == KeyEvent.KEYCODE_BACK)&&linearLayout1.visibility != View.VISIBLE) {
             linearLayout1.visibility = View.VISIBLE
@@ -221,12 +237,11 @@ class MainActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        switch1.text = "detection"
+        switch1.text = "Detection"
         switch1.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { btnView, isChecked ->
             xValue = (Singleton.x.absoluteValue - 9.80665).absoluteValue
             yValue = (Singleton.y.absoluteValue - 9.80665).absoluteValue
             zValue = (Singleton.z.absoluteValue - 9.80665).absoluteValue
-            val intent2 =  Intent(this,DetectionService::class.java)
             if (isChecked) {
                 println(xValue)
                 if(xValue<0.3||yValue<0.3||zValue<0.3){
@@ -342,6 +357,8 @@ class MainActivity : AppCompatActivity() {
             customAdapter!!.refreshView()
         }
 
+        detectstatus.text = ""
+
         camera!!.setOnClickListener {
             val thread = Thread(Runnable {
                 try {
@@ -360,5 +377,6 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 
 }

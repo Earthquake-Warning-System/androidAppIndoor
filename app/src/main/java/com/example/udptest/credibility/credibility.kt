@@ -26,7 +26,10 @@ class Credibility{
             if(serverIp != "" || serverPort != 0) {
                 val dif = eqTime - eqT!!.toLong()
                 Log.d("dif", (eqTime - eqT!!.toLong()).toString())
-                when {
+
+                //for demo test
+                valueOfReliable = 100
+                /*when {
                     dif >= 75600000 -> {
                         valueOfReliable = 100
                     }
@@ -52,7 +55,7 @@ class Credibility{
                         valueOfReliable = 1
                         println("credibility error")
                     }
-                }
+                }*/
                 sharedPreferences!!.edit().putString("eqLast", eqTime.toString()).apply()
                 Log.d("eqset", eqTime.toString())
             }

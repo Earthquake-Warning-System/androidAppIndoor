@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledFuture
 
 lateinit var wakeLock2 : PowerManager.WakeLock
 var status2 : Boolean = false
-lateinit var future2 : ScheduledFuture<*>
+var future2 : ScheduledFuture<*>? = null
 val schedule2 = Executors.newScheduledThreadPool(1)!!
 
 class UdpService : Service() {
@@ -86,7 +86,9 @@ class UdpService : Service() {
             wakeLock.release()
             status2 = false
         }
-        future2.cancel(true)
+        if (future2!=null) {
+            future2?.cancel(true)
+        }
         /*schedule2.shutdown()
         if(!schedule2.awaitTermination(3, TimeUnit.SECONDS)){
             schedule2.shutdownNow()

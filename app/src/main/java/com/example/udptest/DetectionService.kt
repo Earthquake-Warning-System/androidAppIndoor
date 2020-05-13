@@ -21,7 +21,7 @@ val schedule = Executors.newScheduledThreadPool(2)!!
 
 lateinit var wakeLock : PowerManager.WakeLock
 var status : Boolean = false
-lateinit var future : ScheduledFuture<*>
+var future : ScheduledFuture<*>? = null
 
 class DetectionService : Service() {
     private val mBinder = MyBinder()
@@ -53,9 +53,13 @@ class DetectionService : Service() {
         if(status){
             wakeLock.release()
             status = false
+
+        }
+        if(future!=null){
+            future?.cancel(true)
         }
 
-        future.cancel(true)
+
 
         //schedule.shutdown()
         /*if (!schedule.isShutdown){
