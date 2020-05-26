@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     "log" -> {
                         textContent = "kp num :$kpNum\n$lastKp\nevent num :$evNum\n$lastEv"
-                        //debuglog.text = textContent
+                        debuglog.text = textContent
                         QRiv!!.setImageBitmap(null)
                         println("refresh UI finish :　"+ Date())
                     }
@@ -291,7 +291,7 @@ class MainActivity : AppCompatActivity() {
 
                         tool.addID(result.contents)
                         Thread(Runnable {
-                            FirebaseSender.pushFCMNotification(tokenArray[0], "Pair", "配對成功")
+                            FirebaseSender.pushFCMNotification(tokenArray[0], "Pair", "配對成功",0)
                         }).start()
                     }
                 }

@@ -10,7 +10,7 @@ import java.net.URL;
 
 public class FirebaseSender {
 
-    public static void pushFCMNotification(String userDeviceIdKey, String title, String body) throws Exception {
+    public static void pushFCMNotification(String userDeviceIdKey, String title, String body , int status ) throws Exception {
         String authKey = BuildConfig.NOTIFICATION_AUTHOR_KEY;   //Please add you FCM AUTH key here
         String FMCurl = "https://fcm.googleapis.com/fcm/send";
 
@@ -26,14 +26,18 @@ public class FirebaseSender {
         JSONObject json = new JSONObject();
         json.put("to",userDeviceIdKey.trim());
         JSONObject info = new JSONObject();
-        info.put("title", title);   // Notification title
-        info.put("body", body); // Notification body
-        info.put("sound",  "eq_warning_sound.mp3");
+        info.put("title", title);
+        info.put("body", body);
+        info.put("sound","default" );
+        info.put("vibrate","true");
         json.put("data", info);
-        json.put("notification",info);
+        if(status == 0) {
+            json.put("notification", info);
+        }
         json.put("priority","high");
 
         OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
         wr.write(json.toString());
         wr.flush();
         wr.close();

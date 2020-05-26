@@ -14,7 +14,8 @@ class FcmPush (private val context: Context){
                     val ids = sharedPreferences.getString(key , "")
                     if (ids!=""){
                         val tokenArray = ids?.split(",")
-                        FirebaseSender.pushFCMNotification(tokenArray!![0] , title, body)
+                        FirebaseSender.pushFCMNotification(tokenArray!![0] , title, body,0)
+                        FirebaseSender.pushFCMNotification(tokenArray!![0] , title, body,1)
                     }
                 }
             } catch (e: Exception) {

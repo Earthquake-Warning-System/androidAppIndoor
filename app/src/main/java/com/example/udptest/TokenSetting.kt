@@ -36,7 +36,7 @@ class TokenSetting{
 
         if(ids!=""){
             val tokenArray = ids?.split(",")
-            FirebaseSender.pushFCMNotification(tokenArray!![0] , "TEST", "Hello")
+            FirebaseSender.pushFCMNotification(tokenArray!![0] , "TEST", "Hello",0)
         }
     }
     fun deleteToken(number : String?){
