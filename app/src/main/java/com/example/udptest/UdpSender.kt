@@ -43,7 +43,8 @@ class UdpSender(private val socket : DatagramSocket){
     fun bootAskSend(){
         val bootAsk = AddressBookProtos.Boot_ask.newBuilder()
         bootAsk.packetType = "3"
-        bootAsk.version = "1.0.0"
+        //For serveral server test
+        bootAsk.version = "0.0.1"
         bootAsk.serverIp = "0"
         bootAsk.serverPort = 0
         val bootaskPack = bootAsk.build().toByteArray()
@@ -74,6 +75,7 @@ class UdpSender(private val socket : DatagramSocket){
             val kpAck = AddressBookProtos.kp_alive_ack.newBuilder()
             kpAck.packetType = "5"
             kpAck.version = "1.0.0"
+            kpAck.role = 1
             val kpAckPack = kpAck.build().toByteArray()
             println("cs ack")
             Sender(serverIp, kpAckPack, serverPort, kpAckPack.size, socket).start()

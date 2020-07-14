@@ -11,7 +11,6 @@ object Singleton {
     var serverPort = 0
     var falseAlarm = true
     var mediaPlayer: MediaPlayer? = null
-    //var socket = DatagramSocket(8080)
     val bell = Bell()
     var x = 0.0F
     var y = 0.0F
@@ -28,6 +27,6 @@ object Singleton {
     var tokenSet = TokenSetting()
     var modelArrayList: ArrayList<Model>? = null
     var detect : SetDetect? = null
-    var socket = DatagramSocket(8080)
+    var socket = DatagramSocket()
     var onCreateNum = 0
 }

@@ -55,8 +55,11 @@ class UdpServer(private val context: Context, socket: DatagramSocket) : Thread()
                             val data3 = AddressBookProtos.Boot_ask.parseFrom(buf)
                             println("Type3")
                             println("get local server ip and port")
+
+
                             serverIp = data3.serverIp
                             serverPort = data3.serverPort
+
                             Log.d("server ip:", serverIp)
                             Log.d("server port:", serverPort.toString())
                         }

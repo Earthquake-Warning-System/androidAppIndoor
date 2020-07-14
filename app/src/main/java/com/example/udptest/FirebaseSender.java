@@ -30,6 +30,7 @@ public class FirebaseSender {
         info.put("body", body);
         info.put("sound","default" );
         info.put("vibrate","true");
+        info.put("android_channel_id","EWS");
         json.put("data", info);
         if(status == 0) {
             json.put("notification", info);
