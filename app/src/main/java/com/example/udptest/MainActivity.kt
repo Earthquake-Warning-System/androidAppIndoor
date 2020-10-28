@@ -33,6 +33,7 @@ import com.example.udptest.Singleton.lastEv
 import com.example.udptest.Singleton.lastKp
 import com.google.zxing.integration.android.IntentIntegrator
 import java.util.*
+import kotlin.concurrent.timerTask
 
 class MainActivity : AppCompatActivity() {
 
@@ -120,8 +121,23 @@ class MainActivity : AppCompatActivity() {
                         QRiv!!.setImageBitmap(null)
                         println("refresh UI finish :　"+ Date())
                     }
-                    "not_eq" -> {
+                    "hand_move" -> {
                         switch1.isChecked = false
+                        stopService(intent2)
+
+                            Timer().schedule(timerTask {
+                                if(xValue<0.3||yValue<0.3||zValue<0.3){
+                                runOnUiThread {
+                                    switch1.isChecked = true
+                                }
+                                startService(intent2)
+                                }else{
+                                    runOnUiThread {
+                                        detectstatus.text = "Put the phone horizontally"
+                                    }
+                                }
+                            },60000)
+
                     }
                     "not_horizontal" -> {
                         detectstatus.text = "Put the phone horizontally"
@@ -215,7 +231,6 @@ class MainActivity : AppCompatActivity() {
         }).start()*/
 
 
-
     }
 
     override fun onDestroy() {
@@ -242,6 +257,7 @@ class MainActivity : AppCompatActivity() {
             xValue = (Singleton.x.absoluteValue - 9.80665).absoluteValue
             yValue = (Singleton.y.absoluteValue - 9.80665).absoluteValue
             zValue = (Singleton.z.absoluteValue - 9.80665).absoluteValue
+
             if (isChecked) {
                 println(xValue)
                 if(xValue<0.3||yValue<0.3||zValue<0.3){
@@ -274,6 +290,8 @@ class MainActivity : AppCompatActivity() {
         })
         return super.onCreateOptionsMenu(menu)
     }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)

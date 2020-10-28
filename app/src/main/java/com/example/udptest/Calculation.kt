@@ -3,6 +3,7 @@ package com.example.udptest
 import android.content.Intent
 import android.util.Log
 import com.example.udptest.Singleton.broadcast
+import java.lang.Thread.sleep
 
 class Calculation(private val listener: OnResultListener, val name:String) {
 
@@ -28,6 +29,8 @@ class Calculation(private val listener: OnResultListener, val name:String) {
     var sumOfTurningPoint = 0.0
     var indexOfOldestTurningPoint = 0
 
+    // detect first time hand move
+    var hand_move_flag = false
     var eqThreshold = 0.0
 
     val largest = 45.0 //detect hand move threshold
@@ -52,10 +55,12 @@ class Calculation(private val listener: OnResultListener, val name:String) {
                 sumOfTurningPoint += turningPointOfCurrent
                 if (isCircularFull()) {
                     val estimatedValue = getEstimatedValue()
-                    if(estimatedValue> largest){
+                    if(estimatedValue> largest && !hand_move_flag){
+                        hand_move_flag = true
                         val intent = Intent("MyMessage") // "MyMessage" 為自定義的 Intent action 名稱
-                        intent.putExtra("message", "not_eq")
+                        intent.putExtra("message", "hand_move")
                         broadcast?.sendBroadcast(intent)
+
                     }else if(isEqOccur(estimatedValue)) {
                         Log.d("detect name",name)
                         listener.onOccur(estimatedValue)
