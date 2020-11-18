@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     var zValue : Double = 0.0
 
 
+
     private val eventListener = object : SensorEventListener {
         // 當感測器的 精確度改變時，就會觸發
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
@@ -124,19 +125,29 @@ class MainActivity : AppCompatActivity() {
                     "hand_move" -> {
                         switch1.isChecked = false
                         stopService(intent2)
+                            val restartTimer = Timer()
+                            restartTimer.schedule(timerTask {
 
-                            Timer().schedule(timerTask {
-                                if(xValue<0.3||yValue<0.3||zValue<0.3){
-                                runOnUiThread {
-                                    switch1.isChecked = true
-                                }
-                                startService(intent2)
+                                if((Singleton.x.absoluteValue - 9.80665).absoluteValue<0.3|| (Singleton.y.absoluteValue - 9.80665).absoluteValue <0.3||( Singleton.z.absoluteValue - 9.80665).absoluteValue<0.3){
+                                    runOnUiThread {
+                                        switch1.isChecked = true
+                                    }
+                                    startService(intent2)
+
+                                    restartTimer.cancel()
+                                    restartTimer.purge()
+                                    Log.d("restart status","success")
+
                                 }else{
                                     runOnUiThread {
                                         detectstatus.text = "Put the phone horizontally"
                                     }
+
+                                    Log.d("restart status","fail")
                                 }
-                            },60000)
+                            },60000,60000)
+
+
 
                     }
                     "not_horizontal" -> {

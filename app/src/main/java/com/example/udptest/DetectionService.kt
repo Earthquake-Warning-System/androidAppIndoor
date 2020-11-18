@@ -22,6 +22,7 @@ val schedule = Executors.newScheduledThreadPool(2)!!
 lateinit var wakeLock : PowerManager.WakeLock
 var status : Boolean = false
 var future : ScheduledFuture<*>? = null
+var startFlag = false
 
 class DetectionService : Service() {
     private val mBinder = MyBinder()
@@ -40,11 +41,18 @@ class DetectionService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+        if(startFlag){
+            Log.d(TAG, "repeat start")
+            return super.onStartCommand(intent, flags, startId)
+        }
+
+
         Log.d(TAG, "onStartCommand() executed")
         Thread(Runnable {
             detect = SetDetect()
             detect?.turnOn()
         }).start()
+        startFlag = true
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -53,7 +61,7 @@ class DetectionService : Service() {
         if(status){
             wakeLock.release()
             status = false
-
+            startFlag = false
         }
         if(future!=null){
             future?.cancel(true)
